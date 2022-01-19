@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
   Drivetrain drive;
   private Joystick joystick;
   private Joystick buttonBoard;
-  
+  private VictorSPX victor_;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -45,7 +45,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     drive = new Drivetrain(1, 2, 3, 4);
     joystick = new Joystick(0);
-   
+    //just for testing
+    victor_ = new VictorSPX(1);
     buttonBoard = new Joystick(0);
     
     
@@ -105,10 +106,10 @@ public class Robot extends TimedRobot {
   if(joystick.getRawButtonPressed(0)){
 /*
 pls delete this later, jsut for testing purposes, tells us which motor, and if spinning forward or backwars
-
+    
 
 */
-    drive.driveL1.set(ControlMode.PercentOutput, .7);
+    victor_.set(ControlMode.PercentOutput, .7);
 
   }
 
