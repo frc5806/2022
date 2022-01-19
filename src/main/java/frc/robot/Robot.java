@@ -15,8 +15,18 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.sql.Time;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.I2C;
+
+import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorMatch;
 
 
 /**
@@ -35,6 +45,12 @@ public class Robot extends TimedRobot {
   private Joystick joystick;
   private Joystick buttonBoard;
   private VictorSPX victor_;
+  private VictorSPX victor_1;
+  private VictorSPX victor_3;
+  private VictorSPX victor_4;
+  public Timer time;
+  public double starttime;
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -45,8 +61,14 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     drive = new Drivetrain(1, 2, 3, 4);
     joystick = new Joystick(0);
-    //just for testing
-    victor_ = new VictorSPX(1);
+    //Right motor 
+   // victor_ = new VictorSPX(1);
+   // victor_1 = new VictorSPX(2);
+
+    // Left motor
+   // victor_3 = new VictorSPX(3);
+   // victor_4 = new VictorSPX(4);
+
     buttonBoard = new Joystick(0);
     
     
@@ -79,7 +101,9 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    //System.out.println("Auto selected: " + m_autoSelected);
+    starttime = time.getFPGATimestamp();
+ 
   }
 
   /**
@@ -87,15 +111,23 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
+    //switch (m_autoSelected) {
+     // case kCustomAuto:
         // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        break;
+    double timer = time.getFPGATimestamp();
+    if (timer - starttime < 4){
+      drive.arcadeDrive(0.5, 0);
+      }
+
+    else{
+      drive.safteyDrive();
+      }
+       // break;
+     // case kDefaultAuto:
+     // default:
+      //  break;
     }
-  }
+  
  
   /**
    * This function is called periodically during operator control.
@@ -103,17 +135,40 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     //comp.start();
-  if(joystick.getRawButtonPressed(0)){
+ // if(joystick.getRawButton(1)){
 /*
 pls delete this later, jsut for testing purposes, tells us which motor, and if spinning forward or backwars
     
 
 */
-    victor_.set(ControlMode.PercentOutput, .7);
+/*
+    victor_.set(ControlMode.PercentOutput, .3);
 
+  } else{
+    victor_.set(ControlMode.PercentOutput, 0);
   }
+*/
+ // if(joystick.getRawButton(2)){
+    /*
+    pls delete this later, jsut for testing purposes, tells us which motor, and if spinning forward or backwars   
+    
+    */
+    /*
+        victor_1.set(ControlMode.PercentOutput, .3);
+    
+      } else{
+        victor_1.set(ControlMode.PercentOutput, 0);
+      }
 
 
+*/
+
+  if(joystick.getRawAxis(1) > .01 || joystick.getRawAxis(4) > .01 || joystick.getRawAxis(1) < -.01 || joystick.getRawAxis(4) < -.01){
+    drive.drive(joystick.getRawAxis(1) , joystick.getRawAxis(4));
+  }
+  else{
+    drive.safteyDrive();
+  }
     
   }
     
