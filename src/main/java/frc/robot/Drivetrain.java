@@ -2,22 +2,26 @@ package frc.robot;
 import com.revrobotics.CANPIDController;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
-public class Drivetrain implements PIDDrivetrainData{
-    public VictorSPX driveR1;
-    public VictorSPX driveR2;
-    public VictorSPX driveL1;
-    public VictorSPX driveL2;
+public class Drivetrain{
+    public WPI_VictorSPX driveR1;
+    public WPI_VictorSPX driveR2;
+    public WPI_VictorSPX driveL1;
+    public WPI_VictorSPX driveL2;
     SpeedControllerGroup left;
     SpeedControllerGroup right;
     DifferentialDrive drive;
     public Drivetrain(int CANIDSR1, int CANIDSR2, int CANIDSL1, int CANIDSL2){
-        driveR1 = new VictorSPX(CANIDSR1, MotorType.kBrushless);
-        driveR2 = new VictorSPX(CANIDSR2, MotorType.kBrushless);
-        driveL1 = new VictorSPX(CANIDSL1, MotorType.kBrushless);
-        driveL2 = new VictorSPX(CANIDSL2, MotorType.kBrushless);
+        driveR1 = new WPI_VictorSPX(CANIDSR1);
+        driveR2 = new WPI_VictorSPX(CANIDSR2);
+        driveL1 = new WPI_VictorSPX(CANIDSL1);
+        driveL2 = new WPI_VictorSPX(CANIDSL2);
 
 
 
@@ -37,7 +41,5 @@ public class Drivetrain implements PIDDrivetrainData{
     public void safteyDrive(){
         drive.arcadeDrive(0, 0);
     }
-    public CANSparkMax[] getMotors(){
-        return new CANSparkMax[]{driveR1, driveR2, driveL1, driveL2};
-    }
+    
 }
