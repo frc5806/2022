@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,12 +43,12 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
-    drive = new Drivetrain(4, 3, 10, 9);
+    drive = new Drivetrain(1, 2, 3, 4);
     joystick = new Joystick(0);
    
     buttonBoard = new Joystick(0);
     
-
+    
   }
 
   /**
@@ -99,6 +102,17 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     //comp.start();
+  if(joystick.getRawButtonPressed(0)){
+/*
+pls delete this later, jsut for testing purposes, tells us which motor, and if spinning forward or backwars
+
+
+*/
+    drive.driveL1.set(ControlMode.PercentOutput, .7);
+
+  }
+
+
     
   }
     
