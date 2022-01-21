@@ -36,19 +36,22 @@ import com.revrobotics.ColorMatch;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  Drivetrain drive;
+  //private static final String kDefaultAuto = "Default";
+  //private static final String kCustomAuto = "My Auto";
+  //private String m_autoSelected;
+  //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick;
   private Joystick buttonBoard;
-  private VictorSPX victor_;
-  private VictorSPX victor_1;
-  private VictorSPX victor_3;
-  private VictorSPX victor_4;
-  public Timer time;
-  public double starttime;
+  
+  Drivetrain drive;
+  
+  private Timer time;
+  private double starttime;
+  private boolean seenBlue;
+
+
+  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -56,19 +59,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+   // m_chooser.addOption("My Auto", kCustomAuto);
     drive = new Drivetrain(1, 2, 3, 4);
     joystick = new Joystick(0);
-    //Right motor 
-   // victor_ = new VictorSPX(1);
-   // victor_1 = new VictorSPX(2);
-
-    // Left motor
-   // victor_3 = new VictorSPX(3);
-   // victor_4 = new VictorSPX(4);
-
-    buttonBoard = new Joystick(0);
+    
     
     
   }
@@ -98,11 +93,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
+   // m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
     starttime = time.getFPGATimestamp();
- 
+    seenBlue = false;
   }
 
   /**
@@ -113,19 +108,36 @@ public class Robot extends TimedRobot {
     //switch (m_autoSelected) {
      // case kCustomAuto:
         // Put custom auto code here
-    double timer = time.getFPGATimestamp();
-    if (timer - starttime < 4){
-      drive.arcadeDrive(0.5, 0);
-      }
 
-    else{
+    Color detectedColor = colorSensor.getColor();
+    double IR = colorSensor.getIR();
+
+    if (detectedColor.blue < 0.3 && !seenBlue ){
+      drive.drive(-0.2, 0);
+      SmartDashboard.putNumber("Blue", detectedColor.blue);
+      
+    } else {
       drive.safteyDrive();
+      seenBlue = true;
+      /// TODO Update starttime
+     double timer =  time.getFPGATimestamp();
+      if (timer - starttime < 4){
+            drive.arcadeDrive(0, .2);
+      } else{
+            drive.safteyDrive();
       }
+    }
+    
+
+   
+
        // break;
      // case kDefaultAuto:
      // default:
       //  break;
     }
+
+  
   
  
   /**
@@ -134,41 +146,23 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     //comp.start();
- // if(joystick.getRawButton(1)){
-/*
-pls delete this later, jsut for testing purposes, tells us which motor, and if spinning forward or backwars
-    
 
-*/
-/*
-    victor_.set(ControlMode.PercentOutput, .3);
+    if(joystick.getRawAxis(1) > .01 || joystick.getRawAxis(4) > .01 || joystick.getRawAxis(1) < -.01 || joystick.getRawAxis(4) < -.01){
+      drive.drive(joystick.getRawAxis(1) , joystick.getRawAxis(4));
+    }
+    else{
+      drive.safteyDrive();
+    }
 
-  } else{
-    victor_.set(ControlMode.PercentOutput, 0);
-  }
-*/
- // if(joystick.getRawButton(2)){
-    /*
-    pls delete this later, jsut for testing purposes, tells us which motor, and if spinning forward or backwars   
-    
-    */
-    /*
-        victor_1.set(ControlMode.PercentOutput, .3);
-    
-      } else{
-        victor_1.set(ControlMode.PercentOutput, 0);
-      }
-
-
-*/
-
-  if(joystick.getRawAxis(1) > .01 || joystick.getRawAxis(4) > .01 || joystick.getRawAxis(1) < -.01 || joystick.getRawAxis(4) < -.01){
-    drive.drive(joystick.getRawAxis(1) , joystick.getRawAxis(4));
-  }
-  else{
-    drive.safteyDrive();
-  }
-    
+    // Color sensor 
+    Color detectedColor = colorSensor.getColor();
+    double IR = colorSensor.getIR();
+  
+    SmartDashboard.putNumber("Red", detectedColor.red);
+    SmartDashboard.putNumber("Green", detectedColor.green);
+    SmartDashboard.putNumber("Blue", detectedColor.blue);
+    SmartDashboard.putNumber("IR", IR);
+      
   }
     
   @Override
