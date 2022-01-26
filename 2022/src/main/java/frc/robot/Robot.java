@@ -11,6 +11,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,8 +21,10 @@ import java.sql.Time;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -49,9 +52,12 @@ public class Robot extends TimedRobot {
   private double starttime;
   private boolean seenBlue;
 
-
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
+  private AnalogInput ultraSonic;
+  //private final AnalogInput ultraSonic1 = new AnalogInput(1);
+
+
 
   /**
    * This function is run when the robot is first started up and should be
@@ -63,9 +69,7 @@ public class Robot extends TimedRobot {
    // m_chooser.addOption("My Auto", kCustomAuto);
     drive = new Drivetrain(1, 2, 3, 4);
     joystick = new Joystick(0);
-    
-    
-    
+    ultraSonic= new AnalogInput(0);
   }
 
   /**
@@ -120,22 +124,40 @@ public class Robot extends TimedRobot {
       drive.safteyDrive();
       seenBlue = true;
       /// TODO Update starttime
-     double timer =  time.getFPGATimestamp();
-      if (timer - starttime < 4){
-            drive.arcadeDrive(0, .2);
-      } else{
-            drive.safteyDrive();
-      }
+     
+      driveUntilBlue();
     }
-    
+  }
 
+  public void driveForTimes(int times) {
+    double timer =  time.getFPGATimestamp();
+    if (timer - starttime < times){
+      drive.arcadeDrive(0, .2);
+    } else{
+      drive.safteyDrive();
+    }
+  }
    
+  public void driveUntilBlue() {
+    Color detectedColor= colorSensor.getColor();
+    double IR = colorSensor.getIR();
+
+    if (detectedColor.blue < 0.3 && !seenBlue) {
+      drive.drive(-0.2, 0);
+      SmartDashboard.putNumber("Blue", detectedColor.blue);
+    } else {
+      drive.safteyDrive();
+      seenBlue = true;
+
+      
+    }
+  }
 
        // break;
      // case kDefaultAuto:
      // default:
       //  break;
-    }
+    
 
   
   
@@ -157,15 +179,41 @@ public class Robot extends TimedRobot {
     // Color sensor 
     Color detectedColor = colorSensor.getColor();
     double IR = colorSensor.getIR();
+
+    double rawValue = ultraSonic.getValue();
+    double voltageScaleFactor = 5/RobotController.getVoltage5V();
+    double currentDistanceInches = rawValue * voltageScaleFactor * 0.0492;
   
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
     SmartDashboard.putNumber("IR", IR);
+    SmartDashboard.putNumber("Distance in inches: ", currentDistanceInches);
       
   }
     
   @Override
   public void testPeriodic() {
   }
+
+/*autonomousCEOTB = Autonomous: End of the Beginning*/
+  public void autonomousCEOTB() {
+    // Shoot ball 
+    double rawValue = ultraSonic.getValue();
+    double voltageScaleFactor = 5/RobotController.getVoltage5V();
+    double currentDistanceInches = rawValue * voltageScaleFactor * 0.0492;
+
+    // TODO: Add encoders to measure distance
+    // drive.drive();
+    //last part
+    if (!(currentDistanceInches < 50) ) {
+      drive.drive(2,0);
+     } else {
+       drive.safteyDrive();
+     }
+     // turn
+     // drive
+     // stop
+ }
+
 }
