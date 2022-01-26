@@ -49,10 +49,21 @@ public class Robot extends TimedRobot {
   private double starttime;
   private boolean seenBlue;
 
-
+  public int position;
+  
+  public void addPos(){
+    position = position+1;
+  }
+  
+  
+  
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
-
+  
+  
+  private driveForTime move1;
+  private driveForTime move2;
+  private driveForTime stop;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -98,6 +109,11 @@ public class Robot extends TimedRobot {
     //System.out.println("Auto selected: " + m_autoSelected);
     starttime = time.getFPGATimestamp();
     seenBlue = false;
+    position=1;
+    move1= new driveForTime(1,5000, .2, 0);
+    move2 = new driveForTime(2,5000, 0, .5);
+    stop = new driveForTime(2, 10000000000, 0, 0);
+    
   }
 
   /**
@@ -108,7 +124,7 @@ public class Robot extends TimedRobot {
     //switch (m_autoSelected) {
      // case kCustomAuto:
         // Put custom auto code here
-
+/*
     Color detectedColor = colorSensor.getColor();
     double IR = colorSensor.getIR();
 
@@ -126,6 +142,12 @@ public class Robot extends TimedRobot {
       } else{
             drive.safteyDrive();
       }
+      */
+    
+    move1.run();
+    move2.run();
+    stop.run();
+    
     }
     
 
