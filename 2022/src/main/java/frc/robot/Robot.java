@@ -51,6 +51,7 @@ public class Robot extends TimedRobot {
   private Timer time;
   private double starttime;
   private boolean seenBlue;
+  private boolean close50;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
@@ -112,30 +113,8 @@ public class Robot extends TimedRobot {
     //switch (m_autoSelected) {
      // case kCustomAuto:
         // Put custom auto code here
-
-    Color detectedColor = colorSensor.getColor();
-    double IR = colorSensor.getIR();
-
-    if (detectedColor.blue < 0.3 && !seenBlue ){
-      drive.drive(-0.2, 0);
-      SmartDashboard.putNumber("Blue", detectedColor.blue);
-      
-    } else {
-      drive.safteyDrive();
-      seenBlue = true;
-      /// TODO Update starttime
-     
-      driveUntilBlue();
-    }
-  }
-
-  public void driveForTimes(int times) {
-    double timer =  time.getFPGATimestamp();
-    if (timer - starttime < times){
-      drive.arcadeDrive(0, .2);
-    } else{
-      drive.safteyDrive();
-    }
+    driveTillWall();
+    
   }
    
   public void driveUntilBlue() {
@@ -148,8 +127,27 @@ public class Robot extends TimedRobot {
     } else {
       drive.safteyDrive();
       seenBlue = true;
+    }
+  }
 
-      
+  public void driveTillWall(){
+    double rawValue = ultraSonic.getValue();
+    double voltageScaleFactor = 5/RobotController.getVoltage5V();
+    double currentDistanceInches = rawValue * voltageScaleFactor * 0.0492; 
+    close50 = false;
+    if (currentDistanceInches <= 50.0){
+      close50 = true;
+    }
+    while(!close50){
+      drive.drive(0.2, 0);
+    }
+    while(close50){
+      double pwr = (currentDistanceInches - 30.0)/10;
+      drive.drive(pwr, 0);
+    }
+
+    if (currentDistanceInches <= 30.0){
+       drive.safteyDrive();
     }
   }
 
@@ -197,12 +195,8 @@ public class Robot extends TimedRobot {
   }
 
 /*autonomousCEOTB = Autonomous: End of the Beginning*/
-  public void autonomousCEOTB() {
-    // Shoot ball 
-    double rawValue = ultraSonic.getValue();
-    double voltageScaleFactor = 5/RobotController.getVoltage5V();
-    double currentDistanceInches = rawValue * voltageScaleFactor * 0.0492;
-
+ /* public void autonomousCEOTB() {
+    // Shoot ball
     // TODO: Add encoders to measure distance
     // drive.drive();
     //last part
@@ -214,6 +208,6 @@ public class Robot extends TimedRobot {
      // turn
      // drive
      // stop
- }
+ }*/
 
 }
