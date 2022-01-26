@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
   
   Drivetrain drive;
   
-  private Timer time;
+  public Timer time;
   private double starttime;
   private boolean seenBlue;
 
