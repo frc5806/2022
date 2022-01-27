@@ -40,14 +40,14 @@ public class Auto{
         time = startTime;
     }
 
-    public void driveTime(int pos, double duration, double speed, double turn){
+    public void driveTime(int pos, double duration, double speed, double turn, int newPos){
         updateTime();
         if(time < duration && pos = position){
             drivetrain.drive(speed, turn);
             hasGone=true;
         }
         else if(hasGone){
-            AddPos();
+            setPos(newPos);
         }
     }
 
@@ -64,14 +64,14 @@ public class Auto{
     }
 
 
-    public void driveColor(int pos, String color, double speed, double turn,){
+    public void driveColor(int pos, String color, double speed, double turn, int newPos){
         if(pos=position){
             hasGone=true;
             if(!colorSense.seeingColor(color)){
                 drivetrain.drive(speed, turn);
             }
             else if(hasGone){
-                AddPos();
+                setPos(newPos);
             
             
             }
