@@ -37,10 +37,10 @@ public class SenseColor{
     }
 
     public boolean seeingColor(String color, double threshold){
-        if(color = "blue"){
+        if(color == "blue"){
             return detectedColor.blue > threshold;
         }
-        else if(color = "green"){
+        else if(color == "green"){
             return detectedColor.green > threshold;
         }
         else{

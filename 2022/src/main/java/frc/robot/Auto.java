@@ -22,19 +22,20 @@ import com.revrobotics.ColorMatch;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 
-private int position;
-private int startTime;
-private Drivaetrain drivetrain;
-private boolean hasGone;
-private Timer timer;
-private double time;
-private SenseColor colorSense;
 
 public class Auto{
 
+    private int position;
+    private int startTime;
+    private Drivetrain drivetrain;
+    private boolean hasGone;
+    private Timer timer;
+    private double time;
+    private SenseColor colorSense;
+
     public Auto(Drivetrain drive){
         position=1;
-        startTime=timer.getFPGATimestamp();
+        startTime= timer.getFPGATimestamp();
         drivetrain=drive;
         hasGone=false;
         time = startTime;
@@ -42,11 +43,11 @@ public class Auto{
 
     public void driveTime(int pos, double duration, double speed, double turn, int newPos){
         updateTime();
-        if(time < duration && pos = position){
+        if(time < duration && pos == position){
             drivetrain.drive(speed, turn);
             hasGone=true;
         }
-        else if(hasGone && pos=position){
+        else if(hasGone && pos == position){
             setPos(newPos);
         }
     }
@@ -65,7 +66,7 @@ public class Auto{
 
 
     public void driveColor(int pos, String color, double speed, double turn, int newPos){
-        if(pos=position){
+        if(pos==position){
             hasGone=true;
             if(!colorSense.seeingColor(color)){
                 drivetrain.drive(speed, turn);
@@ -78,7 +79,6 @@ public class Auto{
         }
         
     }
-
 
     public void updateTime(){
         time=timer.getFPGATimestamp()-startTime;
