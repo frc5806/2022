@@ -51,7 +51,8 @@ public class Robot extends TimedRobot {
   private Timer time;
   private double starttime;
   private boolean seenBlue;
-  private boolean close50;
+  private boolean closeDis;
+  private double currentDistanceInches;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
@@ -103,6 +104,8 @@ public class Robot extends TimedRobot {
     //System.out.println("Auto selected: " + m_autoSelected);
     starttime = time.getFPGATimestamp();
     seenBlue = false;
+    closeDis = false;
+  
   }
 
   /**
@@ -113,7 +116,10 @@ public class Robot extends TimedRobot {
     //switch (m_autoSelected) {
      // case kCustomAuto:
         // Put custom auto code here
-    driveTillWall();
+  //  driveTillWall();
+    drive.safteyDrive();
+
+    driveTillWall(-0.3, 80, 110);
     
   }
    
@@ -130,25 +136,28 @@ public class Robot extends TimedRobot {
     }
   }
 
-  public void driveTillWall(){
+  public void driveTillWall(double power, double distanceAway, double rampDownDistance){
+    // The difference btwn distance to travel and Ramp down distance should be the power you gieve *100
     double rawValue = ultraSonic.getValue();
     double voltageScaleFactor = 5/RobotController.getVoltage5V();
-    double currentDistanceInches = rawValue * voltageScaleFactor * 0.0492; 
-    close50 = false;
-    if (currentDistanceInches <= 50.0){
-      close50 = true;
-    }
-    while(!close50){
-      drive.drive(0.2, 0);
-    }
-    while(close50){
-      double pwr = (currentDistanceInches - 30.0)/10;
-      drive.drive(pwr, 0);
-    }
+    currentDistanceInches = rawValue * voltageScaleFactor * 0.0492;
 
-    if (currentDistanceInches <= 30.0){
-       drive.safteyDrive();
-    }
+    SmartDashboard.putNumber("Distance in inches: ", currentDistanceInches);
+   // driveTillWall(currentDistanceInches);
+
+      if (currentDistanceInches <= rampDownDistance && currentDistanceInches > distanceAway){
+        closeDis = true;
+      } else if (currentDistanceInches <= 30.0){
+        drive.safteyDrive();
+      }
+      
+      if(!closeDis){
+        drive.drive(power, 0);
+      } else if (closeDis){
+        double pwr = (currentDistanceInches - distanceAway)/100;
+        SmartDashboard.putNumber("Power" , pwr);
+        drive.drive(-pwr, 0);
+      } 
   }
 
        // break;
