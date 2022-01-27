@@ -79,7 +79,6 @@ public class Auto{
         
     }
 
-
     public void updateTime(){
         time=timer.getFPGATimestamp()-startTime;
     }

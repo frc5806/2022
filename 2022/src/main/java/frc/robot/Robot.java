@@ -56,9 +56,13 @@ public class Robot extends TimedRobot {
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
+  Encoder encoder = new Encoder(0, 1, true, EncodingType.k4X);
   private AnalogInput ultraSonic;
-  //private final AnalogInput ultraSonic1 = new AnalogInput(1);
-
+	public static final double WHEEL_DIAMETER = 4;
+	public static final double PULSE_PER_REVOLUTION = 360;
+	public static final double ENCODER_GEAR_RATIO = 0;
+	public static final double GEAR_RATIO = 8.45 / 1;
+	public static final double FUDGE_FACTOR = 1.0;
 
 
   /**
@@ -105,7 +109,9 @@ public class Robot extends TimedRobot {
     starttime = time.getFPGATimestamp();
     seenBlue = false;
     closeDis = false;
-  
+
+    final double distancePerPulse = Math.PI * Defines.WHEEL_DIAMETER / Defines.PULSE_PER_REVOLUTION / Defines.ENCODER_GEAR_RATIO / Defines.GEAR_RATIO * Defines.FUDGE_FACTOR; 
+    encoder.setDistancePerPulse(distancePerPulse);
   }
 
   /**
@@ -116,11 +122,16 @@ public class Robot extends TimedRobot {
     //switch (m_autoSelected) {
      // case kCustomAuto:
         // Put custom auto code here
-  //  driveTillWall();
     drive.safteyDrive();
 
-    driveTillWall(-0.3, 80, 110);
-    
+    double encoderDistanceReading = encoder.getDistance();
+		SmartDashboard.putNumber("encoder reading", encoderDistanceReading);
+		
+		drive.drive(-0.25, 0);
+		if (encoderDistanceReading > 36) {
+			drive.drive(0, 0);
+		} 
+    //driveTillWall(-0.3, 80, 110);
   }
    
   public void driveUntilBlue() {
