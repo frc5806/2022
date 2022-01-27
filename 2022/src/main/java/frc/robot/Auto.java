@@ -46,7 +46,7 @@ public class Auto{
             drivetrain.drive(speed, turn);
             hasGone=true;
         }
-        else if(hasGone){
+        else if(hasGone && pos=position){
             setPos(newPos);
         }
     }
