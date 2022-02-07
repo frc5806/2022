@@ -11,6 +11,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,6 +26,10 @@ import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+
+import edu.wpi.first.wpilibj.Encoder;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -45,37 +50,57 @@ public class Robot extends TimedRobot {
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick;
   private Joystick buttonBoard;
-  
+  private Compressor compressor;
+  private Climb climb;
+  private LED led;
   Drivetrain drive;
   
   private Timer time;
   private double starttime;
   private boolean seenBlue;
-  private boolean closeDis;
-  private double currentDistanceInches;
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
-  Encoder encoder = new Encoder(0, 1, true, EncodingType.k4X);
-  private AnalogInput ultraSonic;
+  //Encoder encoder = new Encoder(0, 1, true); // Add EncodingType.k4X
+  
+  private Auto auto;
+  
+
+/*
 	public static final double WHEEL_DIAMETER = 4;
 	public static final double PULSE_PER_REVOLUTION = 360;
 	public static final double ENCODER_GEAR_RATIO = 0;
 	public static final double GEAR_RATIO = 8.45 / 1;
 	public static final double FUDGE_FACTOR = 1.0;
-
+*/
 
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
+
+  
+
+
+
   @Override
   public void robotInit() {
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
     drive = new Drivetrain(1, 2, 3, 4);
-    joystick = new Joystick(0);
-    ultraSonic= new AnalogInput(0);
+    joystick = new Joystick(1);
+    led= new LED(8, 89);
+    buttonBoard = new Joystick(0);    
+    auto = new Auto();
+    compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+    climb = new Climb(0);
+
+    
+
+    // Reuse buffer
+    // Default to a length of 60, start empty output
+    // Length is expensive to set, so only set it once, then just update data
+    
   }
 
   /**
@@ -88,6 +113,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+     // Fill the buffer with a rainbow
+     
   }
 
   /**
@@ -108,12 +135,13 @@ public class Robot extends TimedRobot {
     //System.out.println("Auto selected: " + m_autoSelected);
     starttime = time.getFPGATimestamp();
     seenBlue = false;
-    closeDis = false;
+    auto.startTimeSet();
 
-    final double distancePerPulse = Math.PI * Defines.WHEEL_DIAMETER / Defines.PULSE_PER_REVOLUTION / Defines.ENCODER_GEAR_RATIO / Defines.GEAR_RATIO * Defines.FUDGE_FACTOR; 
-    encoder.setDistancePerPulse(distancePerPulse);
+    //final double distancePerPulse = Math.PI * WHEEL_DIAMETER / PULSE_PER_REVOLUTION / ENCODER_GEAR_RATIO / GEAR_RATIO * FUDGE_FACTOR; 
+   // encoder.setDistancePerPulse(distancePerPulse);
   }
 
+ 
   /**
    * This function is called periodically during autonomous.
    */
@@ -122,16 +150,22 @@ public class Robot extends TimedRobot {
     //switch (m_autoSelected) {
      // case kCustomAuto:
         // Put custom auto code here
-    drive.safteyDrive();
+    auto.driveColor(1,"blue", .3, .2, 0, 2);
+    auto.driveTime(2,2, 0, 0, 3 );
+    auto.driveTime(3,2,0,.3, 4);
+    auto.driveTime(4, 100, 0, 0, 4);
 
-    double encoderDistanceReading = encoder.getDistance();
-		SmartDashboard.putNumber("encoder reading", encoderDistanceReading);
+    drive.drive(auto.moveSpeed, auto.turnSpeed);
+
+    //double encoderDistanceReading = encoder.getDistance();
+		//SmartDashboard.putNumber("encoder reading", encoderDistanceReading);
 		
-		drive.drive(-0.25, 0);
-		if (encoderDistanceReading > 36) {
+	//	drive.drive(-0.25, 0);
+	/*	if (encoderDistanceReading > 36) {
 			drive.drive(0, 0);
 		} 
     //driveTillWall(-0.3, 80, 110);
+    */
   }
    
   public void driveUntilBlue() {
@@ -147,38 +181,6 @@ public class Robot extends TimedRobot {
     }
   }
 
-  public void driveTillWall(double power, double distanceAway, double rampDownDistance){
-    // The difference btwn distance to travel and Ramp down distance should be the power you gieve *100
-    double rawValue = ultraSonic.getValue();
-    double voltageScaleFactor = 5/RobotController.getVoltage5V();
-    currentDistanceInches = rawValue * voltageScaleFactor * 0.0492;
-
-    SmartDashboard.putNumber("Distance in inches: ", currentDistanceInches);
-   // driveTillWall(currentDistanceInches);
-
-      if (currentDistanceInches <= rampDownDistance && currentDistanceInches > distanceAway){
-        closeDis = true;
-      } else if (currentDistanceInches <= 30.0){
-        drive.safteyDrive();
-      }
-      
-      if(!closeDis){
-        drive.drive(power, 0);
-      } else if (closeDis){
-        double pwr = (currentDistanceInches - distanceAway)/100;
-        SmartDashboard.putNumber("Power" , pwr);
-        drive.drive(-pwr, 0);
-      } 
-  }
-
-       // break;
-     // case kDefaultAuto:
-     // default:
-      //  break;
-    
-
-  
-  
  
   /**
    * This function is called periodically during operator control.
@@ -186,48 +188,27 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     //comp.start();
-
-    if(joystick.getRawAxis(1) > .01 || joystick.getRawAxis(4) > .01 || joystick.getRawAxis(1) < -.01 || joystick.getRawAxis(4) < -.01){
-      drive.drive(joystick.getRawAxis(1) , joystick.getRawAxis(4));
-    }
-    else{
+   // compressor.enableDigital();
+    if(joystick.getRawAxis(1) > .01 || joystick.getRawAxis(2) > .01 || joystick.getRawAxis(1) < -.01 || joystick.getRawAxis(2) < -.01){
+      drive.drive(joystick.getRawAxis(1) , joystick.getRawAxis(2));
+    } else{
       drive.safteyDrive();
     }
 
-    // Color sensor 
-    Color detectedColor = colorSensor.getColor();
-    double IR = colorSensor.getIR();
+    if(buttonBoard.getRawButtonPressed(5)){
+      climb.raiseArm();
+    } else if(buttonBoard.getRawButtonPressed(1)){
+      climb.lowerArm();
+    }
 
-    double rawValue = ultraSonic.getValue();
-    double voltageScaleFactor = 5/RobotController.getVoltage5V();
-    double currentDistanceInches = rawValue * voltageScaleFactor * 0.0492;
-  
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
-    SmartDashboard.putNumber("IR", IR);
-    SmartDashboard.putNumber("Distance in inches: ", currentDistanceInches);
-      
-  }
+    led.run();
     
+   
+  }
+
+
   @Override
   public void testPeriodic() {
   }
-
-/*autonomousCEOTB = Autonomous: End of the Beginning*/
- /* public void autonomousCEOTB() {
-    // Shoot ball
-    // TODO: Add encoders to measure distance
-    // drive.drive();
-    //last part
-    if (!(currentDistanceInches < 50) ) {
-      drive.drive(2,0);
-     } else {
-       drive.safteyDrive();
-     }
-     // turn
-     // drive
-     // stop
- }*/
 
 }
