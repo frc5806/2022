@@ -1,6 +1,6 @@
 package frc.robot;
 
-
+import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
@@ -21,30 +21,43 @@ import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 
 public class Auto{
-
+    public double moveSpeed;
+    public double turnSpeed;
     private int position;
-    private int startTime;
-    private Drivetrain drivetrain;
+    private double startTime;
     private boolean hasGone;
     private Timer timer;
     private double time;
     private SenseColor colorSense;
 
-    public Auto(Drivetrain drive){
+    
+
+    public Auto(){
         position=1;
         startTime= timer.getFPGATimestamp();
-        drivetrain=drive;
+        colorSense = new SenseColor();
         hasGone=false;
-        time = startTime;
+        time = 0;
     }
-
     public void driveTime(int pos, double duration, double speed, double turn, int newPos){
         updateTime();
         if(time < duration && pos == position){
-            drivetrain.drive(speed, turn);
+            moveSpeed = speed;
+            turnSpeed=turn;
             hasGone=true;
         }
         else if(hasGone && pos == position){
@@ -54,25 +67,31 @@ public class Auto{
 
     public void AddPos(){
         position=position+1;
-        startTime = timer.getFPGATimestamp()
+        startTime = timer.getFPGATimestamp();
         hasGone = false;
     }
 
     public void setPos(int x){
         position= x;
-        startTime = timer.getFPGATimestamp()
+        startTime = timer.getFPGATimestamp();
         hasGone = false;
+    }
+    public void startTimeSet(){
+        startTime=timer.getFPGATimestamp();
     }
 
 
-    public void driveColor(int pos, String color, double speed, double turn, int newPos){
+    public void driveColor(int pos, String color, double thresh, double speed, double turn, int newPos){
         if(pos==position){
             hasGone=true;
-            if(!colorSense.seeingColor(color)){
-                drivetrain.drive(speed, turn);
+            if(!colorSense.seeingColor(color, thresh)){
+                moveSpeed = speed;
+                turnSpeed = turn;
             }
-            else if(hasGone){
+            else{
                 setPos(newPos);
+                moveSpeed = 0;
+                turnSpeed = 0;
             
             
             }
@@ -84,4 +103,7 @@ public class Auto{
         time=timer.getFPGATimestamp()-startTime;
     }
 
+    
+
+    
 }

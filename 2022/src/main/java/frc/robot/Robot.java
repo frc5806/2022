@@ -8,7 +8,10 @@
 package frc.robot;
 
 
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -50,7 +53,7 @@ public class Robot extends TimedRobot {
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick;
   private Joystick buttonBoard;
-  private Compressor compressor;
+  //private Compressor compressor;
   private Climb climb;
   private LED led;
   Drivetrain drive;
@@ -58,6 +61,8 @@ public class Robot extends TimedRobot {
   private Timer time;
   private double starttime;
   private boolean seenBlue;
+  private Limelight limelight;
+
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
@@ -92,8 +97,9 @@ public class Robot extends TimedRobot {
     led= new LED(8, 89);
     buttonBoard = new Joystick(0);    
     auto = new Auto();
-    compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-    climb = new Climb(0);
+    limelight = new Limelight();
+   // compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+    //climb = new Climb(0);
 
     
 
@@ -187,6 +193,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+   
+   
     //comp.start();
    // compressor.enableDigital();
     if(joystick.getRawAxis(1) > .01 || joystick.getRawAxis(2) > .01 || joystick.getRawAxis(1) < -.01 || joystick.getRawAxis(2) < -.01){
@@ -194,16 +202,24 @@ public class Robot extends TimedRobot {
     } else{
       drive.safteyDrive();
     }
-
+    limelight.update();
+    //post to smart dashboard periodically
+    SmartDashboard.putNumber("LimelightX", limelight.x);
+    SmartDashboard.putNumber("LimelightY", limelight.y);
+    SmartDashboard.putNumber("LimelightArea", limelight.area);
+    limelight.driverCamera();
+    
+/*
     if(buttonBoard.getRawButtonPressed(5)){
       climb.raiseArm();
     } else if(buttonBoard.getRawButtonPressed(1)){
       climb.lowerArm();
     }
+    */
 
-    led.run();
-    
-   
+
+
+    led.run(); 
   }
 
 

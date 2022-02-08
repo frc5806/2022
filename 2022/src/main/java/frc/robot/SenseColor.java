@@ -37,6 +37,7 @@ public class SenseColor{
     }
 
     public boolean seeingColor(String color, double threshold){
+        updateValues();
         if(color == "blue"){
             return detectedColor.blue > threshold;
         }
