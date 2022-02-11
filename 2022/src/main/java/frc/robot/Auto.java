@@ -43,15 +43,17 @@ public class Auto{
     private Timer timer;
     private double time;
     private SenseColor colorSense;
+    private Limelight limelight;
 
     
 
-    public Auto(){
+    public Auto(Limelight limelight){
         position=1;
         startTime= timer.getFPGATimestamp();
         colorSense = new SenseColor();
         hasGone=false;
         time = 0;
+        this.limelight = limelight;
     }
     public void driveTime(int pos, double duration, double speed, double turn, int newPos){
         updateTime();
@@ -101,6 +103,23 @@ public class Auto{
 
     public void updateTime(){
         time=timer.getFPGATimestamp()-startTime;
+    }
+    public void turnLime(int pos, double target, int newPos){
+        if(position==pos){
+            if (limelight.x - target > 2){
+                moveSpeed = 0;
+                turnSpeed = .2;
+            } 
+            else if (limelight.x - target < -2){
+                moveSpeed = 0;
+                turnSpeed = -.2;
+            } 
+            else {
+                setPos(newPos);
+                moveSpeed = 0;
+                turnSpeed = 0; 
+            }
+        }
     }
 
     

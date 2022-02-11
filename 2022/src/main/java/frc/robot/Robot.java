@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.sql.Time;
 
+import edu.wpi.first.wpilibj.SPI;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.Timer;
@@ -33,6 +35,10 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 
 import edu.wpi.first.wpilibj.Encoder;
+
+import com.kauailabs.navx.frc.*;
+import com.kauailabs.navx.frc.AHRS;
+
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
@@ -57,11 +63,14 @@ public class Robot extends TimedRobot {
   private Climb climb;
   private LED led;
   Drivetrain drive;
+  private Drive driveMethods;
+  DrivetrainSpark driveSpark;
   
   private Timer time;
   private double starttime;
   private boolean seenBlue;
   private Limelight limelight;
+  private AHRS gyro;
 
 
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
@@ -70,6 +79,7 @@ public class Robot extends TimedRobot {
   
   private Auto auto;
   
+  private AHRS ahrs;
 
 /*
 	public static final double WHEEL_DIAMETER = 4;
@@ -96,8 +106,10 @@ public class Robot extends TimedRobot {
     joystick = new Joystick(1);
     led= new LED(8, 89);
     buttonBoard = new Joystick(0);    
-    auto = new Auto();
     limelight = new Limelight();
+    auto = new Auto(limelight);
+    driveSpark = new DrivetrainSpark(1, 2, 3, 4, 5, 6);
+    driveMethods = new Drive(gyro, driveSpark);
    // compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     //climb = new Climb(0);
 
@@ -207,7 +219,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LimelightX", limelight.x);
     SmartDashboard.putNumber("LimelightY", limelight.y);
     SmartDashboard.putNumber("LimelightArea", limelight.area);
-    limelight.driverCamera();
+    limelight.retroCamera();
+
     
 /*
     if(buttonBoard.getRawButtonPressed(5)){
