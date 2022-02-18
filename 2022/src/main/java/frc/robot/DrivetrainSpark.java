@@ -31,9 +31,12 @@ public class DrivetrainSpark {
         driveL3 = new CANSparkMax(CANIDSL3, MotorType.kBrushless);
        
        
-        //driveR1.setInverted(true);
-       // driveR2.setInverted(true);
-       // driveR3.setInverted(true);
+        driveR1.setInverted(false);
+        driveR2.setInverted(false);
+        driveR3.setInverted(false);
+        driveL1.setInverted(false);
+        driveL2.setInverted(false);
+        driveL3.setInverted(false);
         
         right = new MotorControllerGroup(driveR1, driveR2, driveR3);
         left = new MotorControllerGroup(driveL1, driveL2, driveL3);
