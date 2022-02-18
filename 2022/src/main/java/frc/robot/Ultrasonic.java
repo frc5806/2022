@@ -33,20 +33,20 @@ public class Ultrasonic {
         return currentDistanceInches;
     }
 
-    public void driveTillBlue(double power, double distanceAway, double rampDownDistance, Drivetrain drive){
+    public void driveTillBlue(double power, double distanceAway, double rampDownDistance){
             // The difference btwn distance to travel and Ramp down distance should be the power you gieve *100
         if (getDistance() <= rampDownDistance && getDistance() > distanceAway){
             closeDis = true;
           } else if (currentDistanceInches <= 30.0){
-            drive.safteyDrive();
+            //drive.safteyDrive();
           }
           
           if(!closeDis){
-            drive.drive(power, 0);
+           // drive.drive(power, 0);
           } else if (closeDis){
             double pwr = (getDistance() - distanceAway)/100;
             SmartDashboard.putNumber("Power" , pwr);
-            drive.drive(-pwr, 0);
+           // drive.drive(-pwr, 0);
           } 
     }
 }

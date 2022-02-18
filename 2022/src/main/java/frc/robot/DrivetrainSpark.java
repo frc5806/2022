@@ -29,9 +29,11 @@ public class DrivetrainSpark {
         driveL1 = new CANSparkMax(CANIDSL1, MotorType.kBrushless);
         driveL2 = new CANSparkMax(CANIDSL2, MotorType.kBrushless);
         driveL3 = new CANSparkMax(CANIDSL3, MotorType.kBrushless);
-        driveR1.setInverted(true);
-        driveR2.setInverted(true);
-        driveR3.setInverted(true);
+       
+       
+        //driveR1.setInverted(true);
+       // driveR2.setInverted(true);
+       // driveR3.setInverted(true);
         
         right = new MotorControllerGroup(driveR1, driveR2, driveR3);
         left = new MotorControllerGroup(driveL1, driveL2, driveL3);
@@ -47,6 +49,16 @@ public class DrivetrainSpark {
     }
     public void safteyDrive(){
         arcadeDrive(0, 0, true);
+    }
+
+    public void testDrive( double speed){
+        driveL1.set(speed);
+        driveL2.set(speed);
+        driveL3.set(speed);
+
+        driveR1.set(speed);
+        driveR2.set(speed);
+        driveR3.set(speed);
     }
 
 

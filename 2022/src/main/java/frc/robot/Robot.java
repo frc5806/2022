@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
   //private Compressor compressor;
   private Climb climb;
   private LED led;
-  Drivetrain drive;
+ // Drivetrain drive;
   private Drive driveMethods;
   DrivetrainSpark driveSpark;
   
@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
   private Auto auto;
   
   private AHRS ahrs;
-
+  double speed = 0;
 /*
 	public static final double WHEEL_DIAMETER = 4;
 	public static final double PULSE_PER_REVOLUTION = 360;
@@ -102,14 +102,14 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
-    drive = new Drivetrain(1, 2, 3, 4);
-    joystick = new Joystick(1);
-    led= new LED(8, 89);
-    buttonBoard = new Joystick(0);    
-    limelight = new Limelight();
-    auto = new Auto(limelight);
-    driveSpark = new DrivetrainSpark(1, 2, 3, 4, 5, 6);
-    driveMethods = new Drive(gyro, driveSpark);
+  //  drive = new Drivetrain(1, 2, 3, 4);
+    joystick = new Joystick(0);
+   // led= new LED(8, 89);
+  //  buttonBoard = new Joystick(0);    
+  //  limelight = new Limelight();
+  //  auto = new Auto(limelight);
+    driveSpark = new DrivetrainSpark(2, 3, 4, 6, 5, 10);
+  //  driveMethods = new Drive(gyro, driveSpark);
    // compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     //climb = new Climb(0);
 
@@ -168,12 +168,12 @@ public class Robot extends TimedRobot {
     //switch (m_autoSelected) {
      // case kCustomAuto:
         // Put custom auto code here
-    auto.driveColor(1,"blue", .3, .2, 0, 2);
+   /* auto.driveColor(1,"blue", .3, .2, 0, 2);
     auto.driveTime(2,2, 0, 0, 3 );
     auto.driveTime(3,2,0,.3, 4);
-    auto.driveTime(4, 100, 0, 0, 4);
+    auto.driveTime(4, 100, 0, 0, 4);*/
 
-    drive.drive(auto.moveSpeed, auto.turnSpeed);
+    driveSpark.drive(auto.moveSpeed, auto.turnSpeed, false);
 
     //double encoderDistanceReading = encoder.getDistance();
 		//SmartDashboard.putNumber("encoder reading", encoderDistanceReading);
@@ -187,16 +187,16 @@ public class Robot extends TimedRobot {
   }
    
   public void driveUntilBlue() {
-    Color detectedColor= colorSensor.getColor();
+   /* Color detectedColor= colorSensor.getColor();
     double IR = colorSensor.getIR();
 
     if (detectedColor.blue < 0.3 && !seenBlue) {
-      drive.drive(-0.2, 0);
+     // drive.drive(-0.2, 0);
       SmartDashboard.putNumber("Blue", detectedColor.blue);
     } else {
-      drive.safteyDrive();
+      // drive.safteyDrive();
       seenBlue = true;
-    }
+    }*/
   }
 
  
@@ -209,17 +209,32 @@ public class Robot extends TimedRobot {
    
     //comp.start();
    // compressor.enableDigital();
-    if(joystick.getRawAxis(1) > .01 || joystick.getRawAxis(2) > .01 || joystick.getRawAxis(1) < -.01 || joystick.getRawAxis(2) < -.01){
-      drive.drive(joystick.getRawAxis(1) , joystick.getRawAxis(2));
-    } else{
-      drive.safteyDrive();
-    }
-    limelight.update();
+   // change to two for airplane controller 
+
+   driveSpark.testDrive(speed);
+
+   if (joystick.getRawButtonPressed(1)){
+     speed = 0;
+   } else if (joystick.getRawButtonPressed(2)){
+     speed = 0.3;
+   }
+    
+    /*if (joystick.getRawButtonPressed(1)){
+      speed=0;
+    } else if (joystick.getRawButtonPressed(2)){
+      speed = .25;
+    } else if (joystick.getRawButtonPressed(3)){
+      speed = .5;
+    } */
+
+  
+     
+   // limelight.update();
     //post to smart dashboard periodically
-    SmartDashboard.putNumber("LimelightX", limelight.x);
+ /*   SmartDashboard.putNumber("LimelightX", limelight.x);
     SmartDashboard.putNumber("LimelightY", limelight.y);
     SmartDashboard.putNumber("LimelightArea", limelight.area);
-    limelight.retroCamera();
+    limelight.retroCamera();*/
 
     
 /*
@@ -232,7 +247,7 @@ public class Robot extends TimedRobot {
 
 
 
-    led.run(); 
+   // led.run(); 
   }
 
 
