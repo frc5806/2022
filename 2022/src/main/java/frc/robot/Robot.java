@@ -81,6 +81,8 @@ public class Robot extends TimedRobot {
   
   private AHRS ahrs;
   double speed = 0;
+
+  int casire = 1;
 /*
 	public static final double WHEEL_DIAMETER = 4;
 	public static final double PULSE_PER_REVOLUTION = 360;
@@ -108,7 +110,7 @@ public class Robot extends TimedRobot {
   //  buttonBoard = new Joystick(0);    
   //  limelight = new Limelight();
   //  auto = new Auto(limelight);
-    driveSpark = new DrivetrainSpark(2, 3, 4, 6, 5, 10);
+    driveSpark = new DrivetrainSpark(3, 5, 9, 2, 4, 10);
   //  driveMethods = new Drive(gyro, driveSpark);
    // compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     //climb = new Climb(0);
@@ -172,8 +174,33 @@ public class Robot extends TimedRobot {
     auto.driveTime(2,2, 0, 0, 3 );
     auto.driveTime(3,2,0,.3, 4);
     auto.driveTime(4, 100, 0, 0, 4);*/
+    if (casire == 1) {  
 
-    driveSpark.drive(auto.moveSpeed, auto.turnSpeed, false);
+      auto.driveDistance(1, 72, 2);
+      auto.driveTurn(2,90,3);
+      auto.driveDistance(3,22*12,4);
+      auto.driveTime(4, 1000, 0, 0, 4);
+
+    } else if (casire == 2) {  
+
+      auto.driveTurn(1, 210, 2);
+      auto.driveDistance(3,19*12,4);
+      auto.driveTime(4, 1000, 0, 0, 4);
+
+    } else if (casire == 3) {  
+
+      auto.driveTurn(1, 203, 2);
+      auto.driveDistance(3,20*12,4);
+      auto.driveTime(4, 1000, 0, 0, 4);
+
+    } else {  
+      
+      auto.driveDistance(1, 96, 2);
+      auto.driveTurn(2,270,3);
+      auto.driveDistance(3,22*12,4);
+      auto.driveTime(4, 1000, 0, 0, 4);
+
+    }
 
     //double encoderDistanceReading = encoder.getDistance();
 		//SmartDashboard.putNumber("encoder reading", encoderDistanceReading);
@@ -211,13 +238,13 @@ public class Robot extends TimedRobot {
    // compressor.enableDigital();
    // change to two for airplane controller 
 
-   driveSpark.testDrive(speed);
+   driveSpark.drive(-0.5, 0, false);
 
-   if (joystick.getRawButtonPressed(1)){
-     speed = 0;
-   } else if (joystick.getRawButtonPressed(2)){
-     speed = 0.3;
-   }
+/*   if (joystick.getRawAxis(1) > 0.01 || joystick.getRawAxis(4) > 0.01 || joystick.getRawAxis(1) < -0.01 || joystick.getRawAxis(4) < -0.01){
+     driveSpark.drive(joystick.getRawAxis(1), joystick.getRawAxis(4), false);
+   } else {
+     driveSpark.safteyDrive();
+   }*/
     
     /*if (joystick.getRawButtonPressed(1)){
       speed=0;

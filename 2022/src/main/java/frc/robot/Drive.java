@@ -11,17 +11,22 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Drive {
     int P, I, D = 1;
-    int integral, previous_error, setpoint = 0;
-    AHRS gyro;
-    double rcw;
-    DrivetrainSpark drive;
-    private double error;
+    public int integral, previous_error, setpoint = 0;
+    public double error;
+    public AHRS gyro;
+    
+    double rcw; // turn
+    public static DrivetrainSpark drive;
+
+
     private static double wheelDiameter;
     private static double wheelCircum;
-    private RelativeEncoder encoderR1;
+
+    public static RelativeEncoder encoderR1;
 
 
-    public Drive(AHRS gyro, DrivetrainSpark drive){
+
+    public Drive(AHRS gyro, DrivetrainSpark drive) {
         this.gyro = gyro;
         this.drive = drive;
         wheelCircum = Math.PI * wheelDiameter;
@@ -29,20 +34,18 @@ public class Drive {
 
     }
 
-    public void setSetpoint(int setpoint)
-    {
+    public void setSetpoint(int setpoint) {
         this.setpoint = setpoint;
     }
 
-    public void PID(){
+    public void PID() {
         error = setpoint - gyro.getAngle(); // Error = Target - Actual
         this.integral += (error*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
         double derivative = (error - this.previous_error) / .02;
         this.rcw = P*error + I*this.integral + D*derivative;
     }
 
-    public void execute()
-    {
+    public void execute() {
         PID();
         drive.arcadeDrive(0, rcw, false);
     }
@@ -59,31 +62,72 @@ public class Drive {
         return Math.abs(error) < 2;
     }
 
-    public void resetPosition(){
+    public void resetEncoders(){
         encoderR1.setPosition(0);
+    }
+
+    public void resetGyro() {
+        gyro.setAngleAdjustment(gyro.getAngle());
     }
 
     public void driveDistance(double distance, double pvalue){
         double distanceLeft = distance - encoderR1.getPosition()/encoderR1.getCountsPerRevolution()*wheelCircum; // Error = Target - Actual
+        
         this.integral += (distanceLeft*.02); // Integral is increased by the error*time (which is .02 seconds using normal IterativeRobot)
         double derivative = (distanceLeft - this.previous_error) / .02;
         this.rcw = pvalue*distanceLeft + I*this.integral + D*derivative;
+
         drive.arcadeDrive(rcw, 0, false);
     }
 
     public boolean driveDSimple(double distance){
-        boolean inAction=false;
+        boolean inAction=true;
         double distanceLeft = distance - encoderR1.getPosition()/encoderR1.getCountsPerRevolution()*wheelCircum; // Error = Target - Actual
-        if(distanceLeft>7){
+        
+        if (distanceLeft > 7) {
             drive.arcadeDrive(.5, 0, false);
             inAction=true;
         }
-        else if(distanceLeft > 0){
+        else if (distanceLeft > 0){
             drive.arcadeDrive(.1, 0, false);
             inAction=true;
         }
+        else{
+            inAction=false;
+            drive.arcadeDrive(0, 0, false);
+        }
+        
+
+        return inAction;
+
+    } // end of driveSimple
+
+    public boolean gyroTurn(double degrees) {
+
+        // drive.PID();
+
+        boolean inAction=true;
+        double distanceLeft = degrees - gyro.getAngle(); // Error = Target - Actual
+        
+        if (distanceLeft > 7) {
+            drive.arcadeDrive(0, 0.5, false);
+            inAction=true;
+        }
+        else if (distanceLeft > 0){
+            drive.arcadeDrive(0, 0.1, false);
+            inAction=true;
+        }
+        else{
+            inAction=false;
+            drive.arcadeDrive(0, 0, false);
+        }
+        
 
         return inAction;
 
     }
+
+    
+    
+
 }
