@@ -57,13 +57,15 @@ public class Robot extends TimedRobot {
   //private static final String kCustomAuto = "My Auto";
   //private String m_autoSelected;
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private Joystick joystick;
+  private Joystick joystick1;
+  private Joystick joystick2;
+  private Intake intake;
   private Joystick buttonBoard;
   //private Compressor compressor;
   private Climb climb;
   private LED led;
  // Drivetrain drive;
-  private Drive driveMethods;
+  
   DrivetrainSpark driveSpark;
   
   private Timer time;
@@ -72,7 +74,7 @@ public class Robot extends TimedRobot {
   private Limelight limelight;
   private AHRS gyro;
 
-
+  private Shooter shooter;
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
   //Encoder encoder = new Encoder(0, 1, true); // Add EncodingType.k4X
@@ -105,9 +107,13 @@ public class Robot extends TimedRobot {
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
   //  drive = new Drivetrain(1, 2, 3, 4);
-    joystick = new Joystick(0);
+    joystick1 = new Joystick(1);
+    joystick2 = new Joystick(2);
+    intake = new Intake(99, 739, 365, 214);
+    shooter = new Shooter(78325, 34154, 49816);
+    climb = new Climb(520, 613);
    // led= new LED(8, 89);
-  //  buttonBoard = new Joystick(0);    
+    buttonBoard = new Joystick(0);    
   //  limelight = new Limelight();
   //  auto = new Auto(limelight);
     driveSpark = new DrivetrainSpark(3, 5, 9, 2, 4, 10);
@@ -174,6 +180,8 @@ public class Robot extends TimedRobot {
     auto.driveTime(2,2, 0, 0, 3 );
     auto.driveTime(3,2,0,.3, 4);
     auto.driveTime(4, 100, 0, 0, 4);*/
+
+    // each case refers to each startin position
     if (casire == 1) {  
 
       auto.driveDistance(1, 72, 2);
@@ -194,7 +202,7 @@ public class Robot extends TimedRobot {
       auto.driveTime(4, 1000, 0, 0, 4);
 
     } else {  
-      
+
       auto.driveDistance(1, 96, 2);
       auto.driveTurn(2,270,3);
       auto.driveDistance(3,22*12,4);
@@ -238,21 +246,55 @@ public class Robot extends TimedRobot {
    // compressor.enableDigital();
    // change to two for airplane controller 
 
-   driveSpark.drive(-0.5, 0, false);
+   
 
-/*   if (joystick.getRawAxis(1) > 0.01 || joystick.getRawAxis(4) > 0.01 || joystick.getRawAxis(1) < -0.01 || joystick.getRawAxis(4) < -0.01){
-     driveSpark.drive(joystick.getRawAxis(1), joystick.getRawAxis(4), false);
+   // drive
+   if (joystick1.getRawAxis(1) > 0.01 || joystick1.getRawAxis(4) > 0.01 || joystick1.getRawAxis(1) < -0.01 || joystick1.getRawAxis(4) < -0.01){
+     driveSpark.drive(joystick1.getRawAxis(1), joystick1.getRawAxis(4), false);
    } else {
      driveSpark.safteyDrive();
-   }*/
-    
-    /*if (joystick.getRawButtonPressed(1)){
-      speed=0;
-    } else if (joystick.getRawButtonPressed(2)){
-      speed = .25;
-    } else if (joystick.getRawButtonPressed(3)){
-      speed = .5;
-    } */
+   }
+
+   /*----- Intake & Shoot ----- */
+
+   if (buttonBoard.getRawButton(7)) {
+     intake.forwardIntake();
+   } else if(buttonBoard.getRawButton(8)) {
+     intake.backIntake();
+   } else{
+     intake.stopIntake();
+   }
+
+   if (buttonBoard.getRawButton(5)) {
+    intake.forwardHopper();
+  } else if(buttonBoard.getRawButton(6)) {
+    intake.backHopper();
+  } else{
+    intake.stopHopper();
+  }
+
+  if (buttonBoard.getRawButton(4)) {
+    shooter.shoot();
+  } else{
+    shooter.dontShoot();
+  }
+
+  // intake pistons
+  if (buttonBoard.getRawButtonPressed(3)) {
+      intake.toggleIntake();
+  }
+
+
+
+  /*------- Climb ------- */
+  if (buttonBoard.getRawButtonPressed(1)) {
+    climb.raiseArm();
+  } else if (buttonBoard.getRawButtonPressed(2)) {
+    climb.lowerArm();
+  }
+
+
+
 
   
      

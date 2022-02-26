@@ -23,6 +23,7 @@ public class Drive {
     private static double wheelCircum;
 
     public static RelativeEncoder encoderR1;
+    public static RelativeEncoder encoderL1;
 
 
 
@@ -31,6 +32,7 @@ public class Drive {
         this.drive = drive;
         wheelCircum = Math.PI * wheelDiameter;
         encoderR1 = drive.driveR1.getAlternateEncoder(4260);
+        encoderL1 = drive.driveL1.getAlternateEncoder(4260);
 
     }
 
@@ -97,10 +99,45 @@ public class Drive {
             drive.arcadeDrive(0, 0, false);
         }
         
+    
 
         return inAction;
 
     } // end of driveSimple
+
+    public boolean driveDStraight(double distance){
+        boolean inAction=true;
+        double distanceLeft = distance - encoderR1.getPosition()/encoderR1.getCountsPerRevolution()*wheelCircum; // Error = Target - Actual
+        
+        if (distanceLeft > 7) {
+            driveS(.5);
+            inAction=true;
+        }
+        else if (distanceLeft > 0){
+            driveS(.1);
+            inAction=true;
+        }
+        else{
+            inAction=false;
+            drive.arcadeDrive(0, 0, false);
+        }
+
+        return inAction;
+
+    }
+
+    public void driveS(double power) {
+        double kP = 1;
+        error = encoderL1.getPosition() - encoderR1.getPosition();
+        double turn_power = kP * error;
+        drive.arcadeDrive(power, turn_power, false);
+
+    }
+         /*   function drive_straight_enc(power):
+    error = left_encoder - right_encoder
+    turn_power = kP * error
+    drive.arcadeDrive(power, turn_power, squaredInputs=False)*/
+
 
     public boolean gyroTurn(double degrees) {
 
