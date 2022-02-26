@@ -11,8 +11,11 @@ public class LED {
     private Timer timer; 
     private double time;
     private int length;
+    public int mode;
+    public boolean inShot;
 
     public LED(int port, int length){
+        mode = 1;
         m_led = new AddressableLED(port);
         m_ledBuffer = new AddressableLEDBuffer(length);
         m_led.setLength(m_ledBuffer.getLength());
@@ -31,7 +34,7 @@ public class LED {
 
     private void rainbow() {
         // For every pixel
-    
+        updateTime();
         int m_rainbowFirstPixelHue = 150;
     
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
@@ -39,14 +42,27 @@ public class LED {
           // shape is a circle so only one value needs to precess
           final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
           // Set the value
-          m_ledBuffer.setHSV(i, hue, 255, 120);
+          if (i < time*20){
+            m_ledBuffer.setHSV(i, hue, 255, 120);
+            m_ledBuffer.setHSV(length/2-i, hue, 255, 120);
+            
+        }
+          
         }
         // Increase by to make the rainbow "move"
         m_rainbowFirstPixelHue += 3;
         // Check bounds
         m_rainbowFirstPixelHue %= 180;
+        if(time>3){
+            startTimeSet();
+            for(int j = 0; j <length; j++){
+                m_ledBuffer.setRGB(j, 255, 255, 255);
+                
+            }
+        }
       }
 
+   
     public void startTimeSet(){
         startTime = timer.getFPGATimestamp();
     }
@@ -79,9 +95,138 @@ public class LED {
             }
         }
     }
+
+    private void blue(){
+        updateTime();
+        
+        for (int i = 0; i < length/2; i++){
+            if (i < time*20){
+                m_ledBuffer.setRGB(i, 0, 0, 255);
+                m_ledBuffer.setRGB(length/2 - i, 0, 0, 255);
+            } else {
+              //  m_ledBuffer.setRGB(i, 255, 255, 255);
+               // m_ledBuffer.setRGB(length/2 - 1 - i, 255, 255, 255);
+            }
+            if(time>2){
+                startTimeSet();
+                for(int j = 0; j <length; j++){
+                    m_ledBuffer.setRGB(j, 255, 255, 255);
+                    
+                }
+            }
+            
+            
+        }
+        if(time>2){
+            startTimeSet();
+            for(int j = 0; j <length; j++){
+                m_ledBuffer.setRGB(j, 255, 255, 255);
+                
+            }
+        }
+    }
     
+    private void rgb(){
+        updateTime();
+        
+        for (int i = 0; i < length/2; i++){
+            if (i < time*20){
+                if(i%3 == 0){
+                
+                    m_ledBuffer.setRGB(i, 255, 0, 0); 
+                }
+                else if(i%3 == 1){
+                    m_ledBuffer.setRGB(i, 0, 255, 0); 
+                }
+                else{
+                    m_ledBuffer.setRGB(i, 0, 0, 255); 
+                }
+                int j=length/2 - i;
+                if(j%3 == 0){
+                
+                    m_ledBuffer.setRGB(j, 255, 0, 0); 
+                }
+                else if(i%3 == 1){
+                    m_ledBuffer.setRGB(j, 0, 255, 0); 
+                }
+                else{
+                    m_ledBuffer.setRGB(j, 0, 0, 255); 
+                }
+                
+            } else {
+              //  m_ledBuffer.setRGB(i, 255, 255, 255);
+               // m_ledBuffer.setRGB(length/2 - 1 - i, 255, 255, 255);
+            }
+            if(time>2){
+                startTimeSet();
+                for(int j = 0; j <length; j++){
+                    m_ledBuffer.setRGB(j, 255, 255, 255);
+                    
+                }
+            }
+            
+            
+        }
+        if(time>2){
+            startTimeSet();
+            for(int j = 0; j <length; j++){
+                m_ledBuffer.setRGB(j, 255, 255, 255);
+                
+            }
+        }
+    }
+
+    private void redBlue(){
+        for (int i = 0; i<length; i++){
+            if(i%3 == 0){
+                
+                m_ledBuffer.setRGB(i, 255, 0, 0); 
+            }
+            else if(i%3 == 1){
+                m_ledBuffer.setRGB(i, 255, 255, 255); 
+            }
+            else{
+                m_ledBuffer.setRGB(i, 0, 0, 255); 
+            }
+        }
+    }
+    private void shooting(){
+        for(int i =0; i<length; i++){
+            m_ledBuffer.setRGB(i, 0, 255, 0); 
+        }
+    }
+
+    
+    public void changeMode(){
+        mode=mode+1;
+        for(int j = 0; j<length; j++){
+            m_ledBuffer.setRGB(j, 255, 255, 255);
+        }
+        if(mode==5){
+            mode=1;
+        }
+        
+    }
+
     public void run(){
-        maroon();
+        if(!inShot){
+            if(mode==1){
+                maroon();
+            }
+            else if(mode == 2){
+                blue();
+            }
+            else if(mode == 3){
+                rgb();
+            }
+            else{
+                rainbow();
+            }
+        }
+        else{
+            shooting();
+        }
+        
      // Set the LEDs
         m_led.setData(m_ledBuffer);
     }

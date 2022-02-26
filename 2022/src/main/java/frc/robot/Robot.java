@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
   
   private AHRS ahrs;
   double speed = 0;
+  boolean goer = false;
 
   int casire = 1;
 /*
@@ -109,10 +110,12 @@ public class Robot extends TimedRobot {
   //  drive = new Drivetrain(1, 2, 3, 4);
     joystick1 = new Joystick(1);
     joystick2 = new Joystick(2);
-    intake = new Intake(99, 739, 365, 214);
+   /* intake = new Intake(99, 739, 365, 214);
     shooter = new Shooter(78325, 34154, 49816);
     climb = new Climb(520, 613);
-   // led= new LED(8, 89);
+*/
+
+    led= new LED(8, 89);
     buttonBoard = new Joystick(0);    
   //  limelight = new Limelight();
   //  auto = new Auto(limelight);
@@ -181,7 +184,7 @@ public class Robot extends TimedRobot {
     auto.driveTime(3,2,0,.3, 4);
     auto.driveTime(4, 100, 0, 0, 4);*/
 
-    // each case refers to each startin position
+    // each case refers to each starting position
     if (casire == 1) {  
 
       auto.driveDistance(1, 72, 2);
@@ -249,14 +252,21 @@ public class Robot extends TimedRobot {
    
 
    // drive
-   if (joystick1.getRawAxis(1) > 0.01 || joystick1.getRawAxis(4) > 0.01 || joystick1.getRawAxis(1) < -0.01 || joystick1.getRawAxis(4) < -0.01){
-     driveSpark.drive(joystick1.getRawAxis(1), joystick1.getRawAxis(4), false);
+   if(!goer){
+     led.mode=1;
+     goer=true;
+   }
+   /*
+   if (joystick2.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(1) < -0.01 || joystick2.getRawAxis(0) < -0.01){
+     driveSpark.drive(-joystick1.getRawAxis(1), 0, false);
    } else {
      driveSpark.safteyDrive();
    }
+   */
+  driveSpark.arcadeDrive(.2, 0, false);
 
    /*----- Intake & Shoot ----- */
-
+/*
    if (buttonBoard.getRawButton(7)) {
      intake.forwardIntake();
    } else if(buttonBoard.getRawButton(8)) {
@@ -272,28 +282,39 @@ public class Robot extends TimedRobot {
   } else{
     intake.stopHopper();
   }
+  */
 
   if (buttonBoard.getRawButton(4)) {
-    shooter.shoot();
+    //shooter.shoot();
+    led.inShot = true;
   } else{
-    shooter.dontShoot();
+   // shooter.dontShoot();
+    led.inShot=false;
+  }
+
+  if(buttonBoard.getRawButtonReleased(4)){
+    led.changeMode();
   }
 
   // intake pistons
   if (buttonBoard.getRawButtonPressed(3)) {
-      intake.toggleIntake();
+      
+      //intake.setIntake();
   }
 
 
 
+
+
   /*------- Climb ------- */
+  /*
   if (buttonBoard.getRawButtonPressed(1)) {
     climb.raiseArm();
   } else if (buttonBoard.getRawButtonPressed(2)) {
     climb.lowerArm();
   }
 
-
+*/
 
 
   
@@ -306,17 +327,11 @@ public class Robot extends TimedRobot {
     limelight.retroCamera();*/
 
     
-/*
-    if(buttonBoard.getRawButtonPressed(5)){
-      climb.raiseArm();
-    } else if(buttonBoard.getRawButtonPressed(1)){
-      climb.lowerArm();
-    }
-    */
 
 
 
-   // led.run(); 
+
+  led.run(); 
   }
 
 

@@ -23,8 +23,7 @@ public class Intake {
         pistonIntake1 = new Solenoid(PneumaticsModuleType.CTREPCM, position1);
         pistonIntake2 = new Solenoid(PneumaticsModuleType.CTREPCM, position2);
 
-        pistonIntake1.set(intakeEnabled);
-        pistonIntake2.set(intakeEnabled);
+       
     }
 
     public void forwardIntake() {
@@ -50,17 +49,12 @@ public class Intake {
     public void backHopper(){
         hopper.set(-.5);
     }
-
-    public void lowerIntake() {
-        pistonIntake1.set(false);
-    }
-    
-    public void raiseIntake() {
-        pistonIntake2.set(true);
-    }
-
-    public void toggleIntake() {
+    public void setIntake(){
         intakeEnabled = !intakeEnabled;
+        pistonIntake1.set(intakeEnabled);
+        pistonIntake2.set(intakeEnabled);
     }
+
+   
     
 }

@@ -3,8 +3,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Climb {
-    private Solenoid climbenoid1;
-    private Solenoid climbenoid2;
+    private static Solenoid climbenoid1;
+    private static Solenoid climbenoid2;
 
     public Climb(int position1, int position2) {
         climbenoid1 = new Solenoid(PneumaticsModuleType.CTREPCM, position1);

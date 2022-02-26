@@ -117,7 +117,7 @@ public class Drive {
             driveS(.1);
             inAction=true;
         }
-        else{
+        else {
             inAction=false;
             drive.arcadeDrive(0, 0, false);
         }
