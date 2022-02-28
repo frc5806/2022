@@ -53,7 +53,7 @@ public class LED {
         m_rainbowFirstPixelHue += 3;
         // Check bounds
         m_rainbowFirstPixelHue %= 180;
-        if(time>3){
+        if(time>2){
             startTimeSet();
             for(int j = 0; j <length; j++){
                 m_ledBuffer.setRGB(j, 255, 255, 255);
@@ -110,7 +110,7 @@ public class LED {
             if(time>2){
                 startTimeSet();
                 for(int j = 0; j <length; j++){
-                    m_ledBuffer.setRGB(j, 255, 255, 255);
+                    m_ledBuffer.setRGB(j, 255, 230, 0);
                     
                 }
             }
@@ -120,13 +120,13 @@ public class LED {
         if(time>2){
             startTimeSet();
             for(int j = 0; j <length; j++){
-                m_ledBuffer.setRGB(j, 255, 255, 255);
+                m_ledBuffer.setRGB(j, 250, 230, 0);
                 
             }
         }
     }
     
-    private void rgb(){
+    private void rwb2(){ // red, white, blue, two
         updateTime();
         
         for (int i = 0; i < length/2; i++){
@@ -136,7 +136,7 @@ public class LED {
                     m_ledBuffer.setRGB(i, 255, 0, 0); 
                 }
                 else if(i%3 == 1){
-                    m_ledBuffer.setRGB(i, 0, 255, 0); 
+                    m_ledBuffer.setRGB(i, 255, 255, 255); 
                 }
                 else{
                     m_ledBuffer.setRGB(i, 0, 0, 255); 
@@ -147,7 +147,7 @@ public class LED {
                     m_ledBuffer.setRGB(j, 255, 0, 0); 
                 }
                 else if(i%3 == 1){
-                    m_ledBuffer.setRGB(j, 0, 255, 0); 
+                    m_ledBuffer.setRGB(j, 255, 255, 255); 
                 }
                 else{
                     m_ledBuffer.setRGB(j, 0, 0, 255); 
@@ -174,7 +174,63 @@ public class LED {
                 
             }
         }
-    }
+    } // end of red white blue
+
+    private void rgb(){
+        updateTime();
+        
+        for (int i = 0; i < length/2; i++){
+            if (i < time*20){
+                if(i%3 == 0){
+                
+                    m_ledBuffer.setRGB(i, 255, 0, 0); 
+                }
+                else if(i%3 == 1){
+                    m_ledBuffer.setRGB(i, 0, 255, 0); 
+                }
+                else{
+                    m_ledBuffer.setRGB(i, 0, 0, 255); 
+                }
+
+                int j=length/2 - i;
+
+                if(j%3 == 0){
+                
+                    m_ledBuffer.setRGB(j, 255, 0, 0); 
+                }
+                else if(i%3 == 1){
+                    m_ledBuffer.setRGB(j, 0, 255, 0); 
+                }
+                else{
+                    m_ledBuffer.setRGB(j, 0, 0, 255); 
+                }
+                
+            } else {
+              //  m_ledBuffer.setRGB(i, 255, 255, 255);
+               // m_ledBuffer.setRGB(length/2 - 1 - i, 255, 255, 255);
+            }
+            
+            if(time>2){
+                startTimeSet();
+                for(int j = 0; j <length; j++){
+                    m_ledBuffer.setRGB(j, 255, 255, 255);
+                    
+                }
+            }
+            
+        } // end of for loop
+
+        if(time>2){
+            startTimeSet();
+            for(int j = 0; j <length; j++){
+                m_ledBuffer.setRGB(j, 255, 255, 255);
+                
+            }
+        }
+
+    } // end of red green blue
+
+
 
     private void redBlue(){
         for (int i = 0; i<length; i++){
@@ -190,6 +246,22 @@ public class LED {
             }
         }
     }
+
+    private void rwb(){ // red white blue
+        for (int i = 0; i<length; i++){
+            if(i%3 == 0){
+                
+                m_ledBuffer.setRGB(i, 255, 0, 0); 
+            }
+            else if(i%3 == 1){
+                m_ledBuffer.setRGB(i, 255, 255, 255); 
+            }
+            else{
+                m_ledBuffer.setRGB(i, 0, 0, 255); 
+            }
+        }
+    } // end of rwb()
+
     private void shooting(){
         for(int i =0; i<length; i++){
             m_ledBuffer.setRGB(i, 0, 255, 0); 
@@ -220,7 +292,7 @@ public class LED {
                 rgb();
             }
             else{
-                rainbow();
+                rwb2();
             }
         }
         else{
@@ -229,6 +301,6 @@ public class LED {
         
      // Set the LEDs
         m_led.setData(m_ledBuffer);
-    }
+    } // end of run()
     
 }

@@ -41,7 +41,9 @@ import com.kauailabs.navx.frc.AHRS;
 
 
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ColorMatchResult;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorMatch;
 
 
@@ -73,7 +75,8 @@ public class Robot extends TimedRobot {
   private boolean seenBlue;
   private Limelight limelight;
   private AHRS gyro;
-
+  
+  
   private Shooter shooter;
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
@@ -108,18 +111,24 @@ public class Robot extends TimedRobot {
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
   //  drive = new Drivetrain(1, 2, 3, 4);
-    joystick1 = new Joystick(1);
+    joystick1 = new Joystick(0);
     joystick2 = new Joystick(2);
+    
+  
    /* intake = new Intake(99, 739, 365, 214);
     shooter = new Shooter(78325, 34154, 49816);
     climb = new Climb(520, 613);
 */
 
     led= new LED(8, 89);
-    buttonBoard = new Joystick(0);    
+    buttonBoard = new Joystick(1);    
   //  limelight = new Limelight();
   //  auto = new Auto(limelight);
-    driveSpark = new DrivetrainSpark(3, 5, 9, 2, 4, 10);
+
+
+    driveSpark = new DrivetrainSpark(2, 5, 9, 3, 4, 10);
+
+
   //  driveMethods = new Drive(gyro, driveSpark);
    // compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
     //climb = new Climb(0);
@@ -256,14 +265,18 @@ public class Robot extends TimedRobot {
      led.mode=1;
      goer=true;
    }
-   /*
-   if (joystick2.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(1) < -0.01 || joystick2.getRawAxis(0) < -0.01){
-     driveSpark.drive(-joystick1.getRawAxis(1), 0, false);
+   
+   
+   if (joystick2.getRawAxis(0) > 0.01 || joystick1.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick1.getRawAxis(1) < -0.01){
+     driveSpark.arcadeDrive(-joystick1.getRawAxis(1)*((joystick1.getRawAxis(3)+1)/2), joystick2.getRawAxis(0)*((joystick2.getRawAxis(3)+1)/2), false);
    } else {
      driveSpark.safteyDrive();
    }
-   */
-  driveSpark.arcadeDrive(.2, 0, false);
+   
+
+ 
+   
+  //driveSpark.arcadeDrive(.2, 0, false);
 
    /*----- Intake & Shoot ----- */
 /*
@@ -283,6 +296,7 @@ public class Robot extends TimedRobot {
     intake.stopHopper();
   }
   */
+  
 
   if (buttonBoard.getRawButton(4)) {
     //shooter.shoot();
@@ -332,6 +346,7 @@ public class Robot extends TimedRobot {
 
 
   led.run(); 
+
   }
 
 
