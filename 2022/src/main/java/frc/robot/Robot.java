@@ -81,10 +81,7 @@ public class Robot extends TimedRobot {
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
   //Encoder encoder = new Encoder(0, 1, true); // Add EncodingType.k4X
-  
-  private Auto auto;
-  
-  private AHRS ahrs;
+    
   double speed = 0;
   boolean goer = false;
 
@@ -111,6 +108,8 @@ public class Robot extends TimedRobot {
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
   //  drive = new Drivetrain(1, 2, 3, 4);
+  // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
+  //m_robotContainer = new RobotContainer();
     joystick1 = new Joystick(0);
     joystick2 = new Joystick(2);
     
@@ -172,11 +171,8 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
     starttime = time.getFPGATimestamp();
-    seenBlue = false;
-    auto.startTimeSet();
+  //  auto.startTimeSet();
 
-    //final double distancePerPulse = Math.PI * WHEEL_DIAMETER / PULSE_PER_REVOLUTION / ENCODER_GEAR_RATIO / GEAR_RATIO * FUDGE_FACTOR; 
-   // encoder.setDistancePerPulse(distancePerPulse);
   }
 
  
@@ -194,7 +190,7 @@ public class Robot extends TimedRobot {
     auto.driveTime(4, 100, 0, 0, 4);*/
 
     // each case refers to each starting position
-    if (casire == 1) {  
+  /*  if (casire == 1) {  
 
       auto.driveDistance(1, 72, 2);
       auto.driveTurn(2,90,3);
@@ -220,7 +216,7 @@ public class Robot extends TimedRobot {
       auto.driveDistance(3,22*12,4);
       auto.driveTime(4, 1000, 0, 0, 4);
 
-    }
+    }*/
 
     //double encoderDistanceReading = encoder.getDistance();
 		//SmartDashboard.putNumber("encoder reading", encoderDistanceReading);
