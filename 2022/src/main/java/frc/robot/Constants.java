@@ -11,13 +11,13 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static final int kLeftMotor1Port = 0;
-    public static final int kLeftMotor2Port = 2;
-    public static final int kLeftMotor3Port = 3;
+    public static final int kLeftMotor1Port = 3;
+    public static final int kLeftMotor2Port = 4;
+    public static final int kLeftMotor3Port = 10;
 
-    public static final int kRightMotor1Port = 1;
-    public static final int kRightMotor2Port = 2;
-    public static final int kRightMotor3Port = 3;
+    public static final int kRightMotor1Port = 2;
+    public static final int kRightMotor2Port = 5;
+    public static final int kRightMotor3Port = 8;
 
 
     public static final int[] kLeftEncoderPorts = new int[] {0, 1};

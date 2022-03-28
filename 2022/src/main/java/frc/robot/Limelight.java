@@ -16,6 +16,36 @@ public class Limelight {
     public double y;
     public double area;
 
+
+    /*--------------------- Calculating distance-------------------------- */
+    double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+
+    // how many degrees back is your limelight rotated from perfectly vertical?
+    double limelightMountAngleDegrees = 25.0; // edit later
+
+    // distance from the center of the Limelight lens to the floor
+    double limelightLensHeightInches = 20.0; // edit later
+
+    // distance from the target to the floor
+    double goalHeightInches = 41.0;
+
+    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+    double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+
+    //calculate distance
+    double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches)/Math.tan(angleToGoalRadians);
+
+    /*---- Aiming---- */
+
+    public void steer() {
+        
+    }
+
+
+
+
+
+    /*---- Functions ----- */
     public void update() {
         //read values periodically
         x = tx.getDouble(0.0);
@@ -33,4 +63,6 @@ public class Limelight {
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(0);
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
     }
+
+
 }
