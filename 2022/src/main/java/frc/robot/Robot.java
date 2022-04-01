@@ -12,10 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,7 +34,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Encoder;
 
 import com.kauailabs.navx.frc.*;
-import com.kauailabs.navx.frc.AHRS;
+// import com.kauailabs.navx.frc.AHRS;
 
 
 import com.revrobotics.ColorSensorV3;
@@ -65,44 +62,25 @@ public class Robot extends TimedRobot {
   private Joystick joystick2;
   private Intake intake;
   private Joystick buttonBoard;
+  private boolean bools = false;
   //private Compressor compressor;
-  private Climb climb;
+  
   private LED led;
-  private 
  // Drivetrain drive;
   
   //DrivetrainSpark driveSpark;
   DriveSubsystem driveSpark;
-  private Timer time;
-  private double starttime;
-  private boolean seenBlue;
   private Limelight limelight;
-  private AHRS gyro;
-  private CANSparkMax tester;
-
-
-  private CANSparkMax test1;
-  private CANSparkMax test2;
-  private CANSparkMax tester2;
-  private CANSparkMax shooter1;
-  private CANSparkMax shooter2;
-
-  
-  
+  // private AHRS gyro;
+  private Climb climb;
+  private VictorSPX tester33;
   private Shooter shooter;
   // private final I2C.Port i2cPort = I2C.Port.kOnboard;
   // private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
   //Encoder encoder = new Encoder(0, 1, true); // Add EncodingType.k4X
-    
-  double speed = 0;
   boolean goer = false;
+  
 
-  int casire = 1;
-
-  CANSparkMax test;
-  double power = -0.2;
-
-  int multipleCount = 0;
 /*
 	public static final double WHEEL_DIAMETER = 4;
 	public static final double PULSE_PER_REVOLUTION = 360;
@@ -124,46 +102,20 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
-  //  drive = new Drivetrain(1, 2, 3, 4);
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
   //m_robotContainer = new RobotContainer();
     joystick1 = new Joystick(0);
-    joystick2 = new Joystick(2);
-    
-    
-    // tester = new CANSparkMax(11, MotorType.kBrushless);
-  
-   /* intake = new Intake(99, 739, 365, 214);
-    shooter = new Shooter(78325, 34154, 49816);
-    climb = new Climb(520, 613);
-*/
-
-    led= new LED(8, 88);
     buttonBoard = new Joystick(1);    
+    joystick2 = new Joystick(2);
+    climb = new Climb(7,4,11,13);
+    shooter = new Shooter(7, 6, 20);    
+    
+    intake = new Intake(9, 37, 5, 6);
+    led= new LED(8, 88);
     limelight = new Limelight();
   //  auto = new Auto(limelight);
+    driveSpark = new DriveSubsystem();    
 
-
-    //driveSpark = new DrivetrainSpark(2, 5, 8, 3, 4, 10);
-    driveSpark = new DriveSubsystem();
-
-    // test1 = new CANSparkMax(11, MotorType.kBrushless);
-    // test2 = new CANSparkMax(9, MotorType.kBrushless);
-     tester = new CANSparkMax(13, MotorType.kBrushless);
-     tester2 = new CANSparkMax(9, MotorType.kBrushless);
-     shooter1 = new CANSparkMax(15, MotorType.kBrushless);
-     shooter2 = new CANSparkMax(7, MotorType.kBrushless);
-   //  tester = new CANSparkMax(13, MotorType.kBrushless);
-
-    
-
-
-  //  driveMethods = new Drive(gyro, driveSpark);
-   // compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
-    //climb = new Climb(0);
-    time = new Timer();
-    tester2.follow(tester, true);
-    
 
     // Reuse buffer
     // Default to a length of 60, start empty output
@@ -201,7 +153,6 @@ public class Robot extends TimedRobot {
    // m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
-    starttime = time.getFPGATimestamp();
   //  auto.startTimeSet();
 
   }
@@ -259,19 +210,6 @@ public class Robot extends TimedRobot {
     //driveTillWall(-0.3, 80, 110);
     */
   }
-   
-  public void driveUntilBlue() {
-   /* Color detectedColor= colorSensor.getColor();
-    double IR = colorSensor.getIR();
-
-    if (detectedColor.blue < 0.3 && !seenBlue) {
-     // drive.drive(-0.2, 0);
-      SmartDashboard.putNumber("Blue", detectedColor.blue);
-    } else {
-      // drive.safteyDrive();
-      seenBlue = true;
-    }*/
-  }
 
  
   /**
@@ -279,154 +217,96 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-   
-   
+    System.out.println("teleop"); 
+    
     //comp.start();
    // compressor.enableDigital();
    // change to two for airplane controller 
-
-   
-
    // drive
   //  if(!goer){
   //    led.mode=1;
   //    goer=true;
   //  }
-   
-   
     // 0 = x-axis, 1 = y-axis, 3 = slider
 
-
-    if (joystick2.getRawAxis(0) > 0.01 || joystick1.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick1.getRawAxis(1) < -0.01){
+    /* ------- Drive ------- */
+    /*if (joystick2.getRawAxis(0) > 0.01 || joystick1.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick1.getRawAxis(1) < -0.01){
       driveSpark.arcadeDrive(-joystick1.getRawAxis(1), -joystick2.getRawAxis(0));
     } else {
       System.out.println("hello");
       driveSpark.arcadeDrive(0, 0);
     }
+    */
+    driveSpark.arcadeDrive(0, 0);
 
+      /*------- Climb ------- */
+  
+  if (buttonBoard.getRawButton(1)) {
+    climb.winch(-.5);
+    
+  } else if (buttonBoard.getRawButton(2)) {
+    climb.winch(.5);
+  }
+  else{
+    climb.winch(0);
+  }
 
-    
-    System.out.println(time.getFPGATimestamp());
-    int times = (int)time.getFPGATimestamp();
-    
-    // we used this to automaticaly reverse the pullies to grease them. 
-    if (times % 8 == 0){
-      if (multipleCount == 0) {
-      power = -power;
-      System.out.println("multiple count" + multipleCount);
-      multipleCount += 1;
-      }
-    } else {
-      System.out.println("else: " + multipleCount);
-      multipleCount = 0;
-    }
-
-    // test1.set(-power); // 11
-    // test2.set(-power); // 9
-    
-    
-    //pls delete, just for testing
-
-    if(buttonBoard.getRawButton(1)){
-      System.out.println("yes");
-      tester.set(-.5);
-    }
-    else if(buttonBoard.getRawButton(2)){
-      tester.set(.5);
+  if(buttonBoard.getRawButtonPressed(3)){
+    bools=!bools;
+    if(bools){
+      climb.armForward();
     }
     else{
-      tester.set(0);
-    } 
-    if (buttonBoard.getRawButton(3)){
-      shooter1.set(0.3);
-    } 
-    
-    if (buttonBoard.getRawButton(4)){
-      shooter2.set(0);
+      climb.armBackward();
     }
-
+  }
     
+  
+  /* ------------ Shooter --------- */
+     if (buttonBoard.getRawButton(4)){
+      shooter.shoot();
+      led.inShot=true;
+    }
+    else{
+      shooter.dontShoot();
+      led.inShot=false;
+    }
+    if(buttonBoard.getRawButtonReleased(4)){
+      led.changeMode();
+    }
     
+    System.out.println(shooter.shooter1.isFollower());
     
-   
+
+  
+
    
 
- 
-   
-  //driveSpark.arcadeDrive(.2, 0, false);
 
-   /*----- Intake & Shoot ----- */
-/*
-   if (buttonBoard.getRawButton(7)) {
-     intake.forwardIntake();
-   } else if(buttonBoard.getRawButton(8)) {
-     intake.backIntake();
-   } else{
-     intake.stopIntake();
-   }
-
-   if (buttonBoard.getRawButton(5)) {
+  if (buttonBoard.getRawButton(5)) {
     intake.forwardHopper();
   } else if(buttonBoard.getRawButton(6)) {
     intake.backHopper();
   } else{
     intake.stopHopper();
   }
-  */
-  
 
-   if (buttonBoard.getRawButton(4)) {
-  //   //shooter.shoot();
-     led.inShot = true;
-  } else{
-  //  // shooter.dontShoot();
-     led.inShot=false;
-   }
-
-  if(buttonBoard.getRawButtonReleased(4)){
-     led.changeMode();
-   }
-
-  // // intake pistons
-  // if (buttonBoard.getRawButtonPressed(3)) {
-      
-  //     //intake.setIntake();
-  // }
-
-
-
-
-
-  /*------- Climb ------- */
-  /*
-  if (buttonBoard.getRawButtonPressed(1)) {
-    climb.raiseArm();
-  } else if (buttonBoard.getRawButtonPressed(2)) {
-    climb.lowerArm();
-  }
-
-*/
+   if (buttonBoard.getRawButton(7)) {
+     intake.forwardIntake();
+   } else if(buttonBoard.getRawButton(8)) {
+     intake.backIntake();
+    } else{
+      intake.stopIntake();
+    }
 
 
   
-     
-    // limelight.update();
-    //post to smart dashboard periodically
-    // SmartDashboard.putNumber("LimelightX", limelight.x);
-    // SmartDashboard.putNumber("LimelightY", limelight.y);
-    // SmartDashboard.putNumber("LimelightArea", limelight.area);
-    // limelight.driverCamera();
-
-    
 
 
-
-
+  
+ 
    led.run(); 
-
-  
-
-  }
+  } // end of teleoperiodic
 
 
   @Override

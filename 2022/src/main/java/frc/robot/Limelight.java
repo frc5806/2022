@@ -18,16 +18,17 @@ public class Limelight {
 
 
     /*--------------------- Calculating distance-------------------------- */
-    double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+    double targetOffsetAngle_Vertical = ty.getDouble(0.0); // vertical offset
+    double targetOffsetAngle_Horizontal = tx.getDouble(0.0); // horzontal offset
 
     // how many degrees back is your limelight rotated from perfectly vertical?
     double limelightMountAngleDegrees = 25.0; // edit later
 
     // distance from the center of the Limelight lens to the floor
-    double limelightLensHeightInches = 20.0; // edit later
+    double limelightLensHeightInches = 20.0; // l
 
     // distance from the target to the floor
-    double goalHeightInches = 41.0;
+    double goalHeightInches = 41.0; // obtained from manual
 
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
@@ -37,7 +38,8 @@ public class Limelight {
 
     /*---- Aiming---- */
 
-    public void steer() {
+    public void steerSideways() {
+       // while (targetOffsetAngle_Horizontal 
         
     }
 

@@ -2,9 +2,12 @@ package frc.robot;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Intake {
@@ -12,26 +15,26 @@ public class Intake {
     private Solenoid pistonIntake2;
 
     static public CANSparkMax intake1;
-    static public CANSparkMax hopper;
+    static public VictorSPX hopper;
 
     public boolean intakeEnabled = false;
    
     public Intake(int CANID1,int CANID2, int position1, int position2) {
         intake1 = new CANSparkMax(CANID1, MotorType.kBrushless);
-        hopper = new CANSparkMax(CANID2, MotorType.kBrushless);
+        hopper = new VictorSPX(CANID2);
         
-        pistonIntake1 = new Solenoid(PneumaticsModuleType.CTREPCM, position1);
-        pistonIntake2 = new Solenoid(PneumaticsModuleType.CTREPCM, position2);
+        pistonIntake1 = new Solenoid(PneumaticsModuleType.CTREPCM, position1); //5
+        pistonIntake2 = new Solenoid(PneumaticsModuleType.CTREPCM, position2);//6
 
        
     }
 
     public void forwardIntake() {
-        intake1.set(.5);
+        intake1.set(1);
     }
 
     public void forwardHopper() {
-        hopper.set(.5);
+        hopper.set(ControlMode.PercentOutput, 1);
     }
 
     public void stopIntake(){
@@ -39,7 +42,7 @@ public class Intake {
     }
 
     public void stopHopper(){
-        hopper.set(0);
+        hopper.set(ControlMode.PercentOutput, 0);
     }
 
     public void backIntake(){
@@ -47,7 +50,7 @@ public class Intake {
     }
 
     public void backHopper(){
-        hopper.set(-.5);
+        hopper.set(ControlMode.PercentOutput, -.5);
     }
     public void setIntake(){
         intakeEnabled = !intakeEnabled;
