@@ -36,10 +36,27 @@ public class Limelight {
     //calculate distance
     double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches)/Math.tan(angleToGoalRadians);
 
+    double Kp = -0.1;
+    double steering_adjust;
+
+    
     /*---- Aiming---- */
 
     public void steerSideways() {
+    
+    
        // while (targetOffsetAngle_Horizontal 
+        double heading_error = tx.getDouble(0.0);
+        steering_adjust = Kp * tx.getDouble(0.0);
+        
+        
+
+
+        
+
+
+
+
         
     }
 
@@ -67,4 +84,4 @@ public class Limelight {
     }
 
 
-}
+} // end of class
