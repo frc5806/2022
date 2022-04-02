@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
 
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -21,19 +23,32 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Climb {
     private static Solenoid climbenoid1;
     private static Solenoid climbenoid2;
+    private static Solenoid climbenoid3;
+    private static Solenoid climbenoid4;
+    private boolean enabler;
 
-    private static CANSparkMax winchold1;
-    private static CANSparkMax winchold2;
+
+    public CANSparkMax winchold1;
+    public CANSparkMax winchold2;
 
     private static Compressor compressor;
 
-    public Climb(int position1, int position2, int victor1, int victor2) {
+    public Climb(int position1, int position2, int victor1, int victor2, int position3, int position4) {
         climbenoid1 = new Solenoid(PneumaticsModuleType.CTREPCM, position1); // 7
         climbenoid2 = new Solenoid(PneumaticsModuleType.CTREPCM, position2); // 4
         winchold1 = new CANSparkMax(victor1, MotorType.kBrushless);
         winchold2 = new CANSparkMax(victor2, MotorType.kBrushless);
+        enabler = false;
+        climbenoid3 = new Solenoid(PneumaticsModuleType.CTREPCM, position3); // 7
+        climbenoid4 = new Solenoid(PneumaticsModuleType.CTREPCM, position4); // 4
+
         climbenoid1.set(false);
         climbenoid2.set(false);
+        climbenoid3.set(false);
+
+
+        winchold1.setIdleMode(IdleMode.kBrake);
+        winchold1.setIdleMode(IdleMode.kBrake);
         
         
 
@@ -71,4 +86,11 @@ public class Climb {
         climbenoid1.set(false);
         climbenoid2.set(false);
     }
+
+    public void clencher(){
+        enabler = !enabler;
+        climbenoid3.set(enabler);
+        climbenoid4.set(enabler);
+    }
+
 }

@@ -18,6 +18,7 @@ public class Intake {
     static public VictorSPX hopper;
 
     public boolean intakeEnabled = false;
+    public boolean intakeSpeed;
    
     public Intake(int CANID1,int CANID2, int position1, int position2) {
         intake1 = new CANSparkMax(CANID1, MotorType.kBrushless);
@@ -30,7 +31,7 @@ public class Intake {
     }
 
     public void forwardIntake() {
-        intake1.set(1);
+        intake1.set(-.5);
     }
 
     public void forwardHopper() {
@@ -46,12 +47,13 @@ public class Intake {
     }
 
     public void backIntake(){
-        intake1.set(-.5);
+        intake1.set(.5);
     }
 
     public void backHopper(){
-        hopper.set(ControlMode.PercentOutput, -.5);
+        hopper.set(ControlMode.PercentOutput, -1);
     }
+
     public void setIntake(){
         intakeEnabled = !intakeEnabled;
         pistonIntake1.set(intakeEnabled);

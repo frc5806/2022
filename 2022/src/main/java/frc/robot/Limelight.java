@@ -42,22 +42,26 @@ public class Limelight {
     
     /*---- Aiming---- */
 
-    public void steerSideways() {
+    public void steerSideways(DriveSubsystem drivespark) {
     
     
-       // while (targetOffsetAngle_Horizontal 
+       while (targetOffsetAngle_Horizontal >= 0 ) {
         double heading_error = tx.getDouble(0.0);
         steering_adjust = Kp * tx.getDouble(0.0);
-        
-        
 
-
-        
-
-
-
+        drivespark.arcadeDrive(0, steering_adjust);
 
         
+    }
+    }
+
+
+    public void moveForward(DriveSubsystem drivespark) {
+
+        while (targetOffsetAngle_Vertical >= 45) {
+
+        }
+
     }
 
 

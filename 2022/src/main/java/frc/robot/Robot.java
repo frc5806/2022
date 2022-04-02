@@ -107,10 +107,10 @@ public class Robot extends TimedRobot {
     joystick1 = new Joystick(0);
     buttonBoard = new Joystick(1);    
     joystick2 = new Joystick(2);
-    climb = new Climb(7,4,11,13);
+    climb = new Climb(7,4,11,13,5,6);
     shooter = new Shooter(7, 6, 20);    
     
-    intake = new Intake(9, 37, 5, 6);
+    intake = new Intake(9, 37, 2, 3);
     led= new LED(8, 88);
     limelight = new Limelight();
   //  auto = new Auto(limelight);
@@ -227,86 +227,122 @@ public class Robot extends TimedRobot {
   //    led.mode=1;
   //    goer=true;
   //  }
-    // 0 = x-axis, 1 = y-axis, 3 = slider
+
+
+
 
     /* ------- Drive ------- */
-    /*if (joystick2.getRawAxis(0) > 0.01 || joystick1.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick1.getRawAxis(1) < -0.01){
-      driveSpark.arcadeDrive(-joystick1.getRawAxis(1), -joystick2.getRawAxis(0));
+
+      // 0 = x-axis, 1 = y-axis, 3 = slider
+      // joystick1 --> forward and backwards
+      // joystick2 --> turning sideways
+
+    if (joystick2.getRawAxis(0) > 0.01 || joystick1.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick1.getRawAxis(1) < -0.01){
+      driveSpark.arcadeDrive(joystick1.getRawAxis(1)/4, joystick2.getRawAxis(0)/4);
     } else {
       System.out.println("hello");
       driveSpark.arcadeDrive(0, 0);
     }
-    */
-    driveSpark.arcadeDrive(0, 0);
-
-      /*------- Climb ------- */
-  
-  if (buttonBoard.getRawButton(1)) {
-    climb.winch(-.5);
     
-  } else if (buttonBoard.getRawButton(2)) {
-    climb.winch(.5);
-  }
-  else{
-    climb.winch(0);
-  }
 
-  if(buttonBoard.getRawButtonPressed(3)){
-    bools=!bools;
-    if(bools){
-      climb.armForward();
-    }
-    else{
-      climb.armBackward();
-    }
-  }
-    
-  
-  /* ------------ Shooter --------- */
-     if (buttonBoard.getRawButton(4)){
-      shooter.shoot();
+  /* ------ Intake ----------- */
+  if (buttonBoard.getRawButton(7)) {
+    intake.forwardIntake();
+   } else if (buttonBoard.getRawButton(8)) {
+    intake.backIntake();
+   } else  {
+     intake.stopIntake();
+ }
+
+ if (joystick2.getRawButtonPressed(1)){
+   intake.setIntake();
+
+ }
+
+    Dashboard.createSmartDashBoardNumber("Speed", 0);
+    Dashboard.createSpeedSlot("Speed", shooter); 
+    shooter.setSpeed(Dashboard.getDashSpeed(shooter));
+
+
+
+
+
+
+
+  //  /* ------ Hopper -------- */ No more hopper :(
+  //  if (buttonBoard.getRawButton(5)) {
+  //   intake.forwardHopper();
+  // } else if(buttonBoard.getRawButton(6)) {
+  //   intake.backHopper();
+  // } else{
+  //   intake.stopHopper();
+  // }
+
+
+    /* ------------ Shooter --------- */
+    if (buttonBoard.getRawButton(5)){
+      shooter.shoot(1); // takes in speed
       led.inShot=true;
     }
     else{
       shooter.dontShoot();
       led.inShot=false;
     }
-    if(buttonBoard.getRawButtonReleased(4)){
+    if(buttonBoard.getRawButtonReleased(5)){
       led.changeMode();
     }
     
     System.out.println(shooter.shooter1.isFollower());
+
+    // if (joystick2.)
+
+
+    /*------- Climb ------- */
+  
+    // winch
+      if (joystick2.getRawButton(6)) {
+        climb.winchold2.set(-.5);
+      }
+      else if (joystick2.getRawButton(4)) {
+        climb.winchold2.set(.5);
+      }
+      else{
+        climb.winchold2.set(0);
+      }
+
+      if (joystick2.getRawButton(5)) {
+        climb.winchold1.set(-.5);
+      }
+      else if (joystick2.getRawButton(3)) {
+        climb.winchold1.set(.5);
+      }
+      else{
+        climb.winchold1.set(0);
+      }
+      
     
-
-  
-
-   
-
-
-  if (buttonBoard.getRawButton(5)) {
-    intake.forwardHopper();
-  } else if(buttonBoard.getRawButton(6)) {
-    intake.backHopper();
-  } else{
-    intake.stopHopper();
-  }
-
-   if (buttonBoard.getRawButton(7)) {
-     intake.forwardIntake();
-   } else if(buttonBoard.getRawButton(8)) {
-     intake.backIntake();
-    } else{
-      intake.stopIntake();
-    }
-
-
-  
+      // forward and backwards arm
+      if(buttonBoard.getRawButtonPressed(3)){
+        bools=!bools;
+        if(bools){
+          climb.armForward();
+        }
+        else{
+          climb.armBackward();
+        }
+      }
+    
+      // clench hand
+      if(buttonBoard.getRawButtonPressed(4)){
+        climb.clencher();
+      }
 
 
   
  
+      
    led.run(); 
-  } // end of teleoperiodic
+  } // end of teleop
 
 
   @Override

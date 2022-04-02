@@ -13,20 +13,36 @@ public class Shooter {
     static public CANSparkMax shooter2;
     static public VictorSPX shooter3;
 
+    static public double speed;
+
     public Shooter(int CANID1,int CANID2,int CANID3) {
         shooter1 = new CANSparkMax(CANID1, MotorType.kBrushless);
         shooter2 = new CANSparkMax(CANID2, MotorType.kBrushless);
         shooter3 = new VictorSPX(CANID3);
-        
+        speed = 0;
         
         
     }
 
-    public void shoot() {
-        shooter1.set(.5);
-        shooter2.set(.5);
+    public void shoot(double setSpeed) {
+        speed = setSpeed;
 
-        shooter3.set(ControlMode.PercentOutput, .5);
+        shooter1.set(speed);
+        shooter2.set(speed);
+
+        shooter3.set(ControlMode.PercentOutput, speed);
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double newSpeed) {
+        if (newSpeed >= 0 && newSpeed <= 1) {
+            speed = newSpeed;
+        } else {
+            System.out.println("~~~ENTER A SPEED BETWEEN 0 AND 1!~~~");
+        }
     }
 
     public void dontShoot() {
