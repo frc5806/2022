@@ -63,6 +63,7 @@ public class Robot extends TimedRobot {
   private Intake intake;
   private Joystick buttonBoard;
   private boolean bools = false;
+  private double sensitivity = 1;
   //private Compressor compressor;
   
   private LED led;
@@ -217,7 +218,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    
     System.out.println("teleop"); 
+
+    sensitivity  = .5 + joystick2.getRawAxis(4)/2;
     
     //comp.start();
    // compressor.enableDigital();
@@ -237,26 +241,25 @@ public class Robot extends TimedRobot {
       // joystick1 --> forward and backwards
       // joystick2 --> turning sideways
 
-    if (joystick2.getRawAxis(0) > 0.01 || joystick1.getRawAxis(1) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick1.getRawAxis(1) < -0.01){
-      driveSpark.arcadeDrive(joystick1.getRawAxis(1)/4, joystick2.getRawAxis(0)/4);
-    } else {
-      System.out.println("hello");
-      driveSpark.arcadeDrive(0, 0);
-    }
+   // if (joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick2.getRawAxis(2) < -0.01){
+   //   driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity, joystick2.getRawAxis(2)*sensitivity);
+   //  } else {
+    //   System.out.println("hello");
+    //   driveSpark.arcadeDrive(0, 0);
+    // }
     
 
   /* ------ Intake ----------- */
-  if (buttonBoard.getRawButton(7)) {
+  if (joystick2.getRawButton(0)) {
     intake.forwardIntake();
-   } else if (buttonBoard.getRawButton(8)) {
+   } else if (joystick2.getRawButton(3)) {
     intake.backIntake();
    } else  {
      intake.stopIntake();
  }
 
- if (joystick2.getRawButtonPressed(1)){
+ if (joystick2.getRawButtonPressed(2)){
    intake.setIntake();
-
  }
 
     Dashboard.createSmartDashBoardNumber("Speed", 0);
@@ -280,15 +283,19 @@ public class Robot extends TimedRobot {
 
 
     /* ------------ Shooter --------- */
-    if (buttonBoard.getRawButton(5)){
+    if (joystick1.getRawButton(1)){
       shooter.shoot(1); // takes in speed
+      led.inShot=true;
+    }
+    else if( joystick1.getRawButton(3)){
+      shooter.shoot(.5);
       led.inShot=true;
     }
     else{
       shooter.dontShoot();
       led.inShot=false;
     }
-    if(buttonBoard.getRawButtonReleased(5)){
+    if(joystick1.getRawButtonReleased(1) || joystick1.getRawButtonReleased(3)){
       led.changeMode();
     }
     
@@ -300,29 +307,43 @@ public class Robot extends TimedRobot {
     /*------- Climb ------- */
   
     // winch
-      if (joystick2.getRawButton(6)) {
-        climb.winchold2.set(-.5);
+      if (buttonBoard.getRawButton(1)) {
+        climb.winchIn();
       }
-      else if (joystick2.getRawButton(4)) {
-        climb.winchold2.set(.5);
-      }
-      else{
-        climb.winchold2.set(0);
+      else if (buttonBoard.getRawButton(2)) {
+        climb.winchOut();
       }
 
-      if (joystick2.getRawButton(5)) {
-        climb.winchold1.set(-.5);
-      }
-      else if (joystick2.getRawButton(3)) {
-        climb.winchold1.set(.5);
-      }
       else{
-        climb.winchold1.set(0);
+        if (buttonBoard.getRawButton(4)) {
+          climb.winchold1.set(-1);
+        }
+        else if (buttonBoard.getRawButton(3)) {
+          climb.winchold1.set(1);
+        }
+        else{
+          climb.winchold1.set(0);
+        }
+        if (buttonBoard.getRawButton(5)) {
+          climb.winchold2.set(1);
+        }
+        else if (buttonBoard.getRawButton(6)) {
+          climb.winchold2.set(-1);
+        }
+        else{
+          climb.winchold2.set(0);
+        }
+  
+        
       }
+      
+
+
+     
       
     
       // forward and backwards arm
-      if(buttonBoard.getRawButtonPressed(3)){
+      if(buttonBoard.getRawButtonPressed(7)){
         bools=!bools;
         if(bools){
           climb.armForward();
@@ -333,7 +354,7 @@ public class Robot extends TimedRobot {
       }
     
       // clench hand
-      if(buttonBoard.getRawButtonPressed(4)){
+      if(buttonBoard.getRawButtonPressed(8)){
         climb.clencher();
       }
 
