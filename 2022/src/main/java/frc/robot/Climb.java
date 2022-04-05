@@ -99,8 +99,8 @@ public class Climb {
     }
     
     public void winchPID(position){
-        m_pidController1.setReference(position, CANSparkMax.ControlType.kVelocity);
-        m_pidController2.setReference(-position, CANSparkMax.ControlType.kVelocity);
+        m_pidController1.setReference(position, CANSparkMax.ControlType.kPosition);
+        m_pidController2.setReference(-position, CANSparkMax.ControlType.kPosition);
     }
     
     
