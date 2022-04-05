@@ -75,6 +75,8 @@ public class Robot extends TimedRobot {
   private Limelight limelight;
   private int position1 = 0;
   private int position2 = 0;
+  private int position1Double = 0;
+  private int position2Double = 0;
   // private AHRS gyro;
   private Climb climb;
   private VictorSPX tester33;
