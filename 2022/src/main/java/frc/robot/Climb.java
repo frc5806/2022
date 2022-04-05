@@ -98,14 +98,14 @@ public class Climb {
         compressor.enableHybrid(40, 80);
     }
     
-    public void winchInPID(rpm){
-        m_pidController1.setReference(-rpm, CANSparkMax.ControlType.kVelocity);
-        m_pidController2.setReference(rpm, CANSparkMax.ControlType.kVelocity);
+    public void winchInPID(position){
+        m_pidController1.setReference(position, CANSparkMax.ControlType.kVelocity);
+        m_pidController2.setReference(-position, CANSparkMax.ControlType.kVelocity);
     }
     
-    public void winchOutPID(rpm){
-        m_pidController1.setReference(rpm, CANSparkMax.ControlType.kVelocity);
-        m_pidController2.setReference(-rpm, CANSparkMax.ControlType.kVelocity);
+    public void winchOutPID(position){
+        m_pidController1.setReference(position, CANSparkMax.ControlType.kVelocity);
+        m_pidController2.setReference(position, CANSparkMax.ControlType.kVelocity);
     }
     
     public void winchStopPID(){
