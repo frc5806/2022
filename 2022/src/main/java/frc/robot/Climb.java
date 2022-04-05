@@ -104,6 +104,11 @@ public class Climb {
         m_pidController1.setReference(rpm, CANSparkMax.ControlType.kVelocity);
         m_pidController2.setReference(-rpm, CANSparkMax.ControlType.kVelocity);
     }
+    
+    public void winchStopPID(){
+        m_pidController1.setReference(0, CANSparkMax.ControlType.kVelocity);
+        m_pidController2.setReference(0, CANSparkMax.ControlType.kVelocity);
+    }
 
     public void winchIn(){
         winchold1.set(-1);
