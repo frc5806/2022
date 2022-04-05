@@ -352,8 +352,8 @@ public class Robot extends TimedRobot {
       position2 = position2- 1;
       }
       else{
-        position1=climb.m_encoder1.getPosition()-84;
-        position2=climb.m_encoder2.getPosition()-84;
+        position1=climb.m_encoder1.getPosition()-1;
+        position2=climb.m_encoder2.getPosition()-1;
       }
       bools2=false;
       
@@ -361,18 +361,18 @@ public class Robot extends TimedRobot {
   
       else{
         if (buttonBoard.getRawButton(4)) {
-          position1 = climb.m_encoder1.getPosition()+84;
+          position1 = climb.m_encoder1.getPosition()+1;
         }
         else if (buttonBoard.getRawButton(3)) {
-          position1=climb.m_encoder1.getPosition()+84;
+          position1=climb.m_encoder1.getPosition()+1;
         }
         else{
           position1=climb.m_encoder1.getPosition()
         if (buttonBoard.getRawButton(4)) {
-          position2 = climb.m_encoder2.getPosition()+84;
+          position2 = climb.m_encoder2.getPosition()+1;
         }
         else if (buttonBoard.getRawButton(3)) {
-          position2=climb.m_encoder12getPosition()+84;
+          position2=climb.m_encoder12getPosition()+1;
         }
         else{
           position2=climb.m_encoder2.getPosition()
