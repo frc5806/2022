@@ -304,35 +304,37 @@ public class Robot extends TimedRobot {
   
     // winch
       if (buttonBoard.getRawButton(1)) {
-        climb.winchIn();
+        climb.winchInPID(5000);
       }
       else if (buttonBoard.getRawButton(2)) {
-        climb.winchOut();
+        climb.winchOutPID(5000);
       }
 
       else{
         if (buttonBoard.getRawButton(4)) {
-          climb.winchold1.set(-1);
+          climb.m_pidController1.setReference(-5000, CANSparkMax.ControlType.kVelocity);
         }
         else if (buttonBoard.getRawButton(3)) {
-          climb.winchold1.set(1);
+          climb.m_pidController1.setReference(5000, CANSparkMax.ControlType.kVelocity);
         }
         else{
-          climb.winchold1.set(0);
+          climb.m_pidController1.setReference(0, CANSparkMax.ControlType.kVelocity);
         }
         if (buttonBoard.getRawButton(5)) {
-          climb.winchold2.set(1);
+          climb.m_pidController2.setReference(5000, CANSparkMax.ControlType.kVelocity);
         }
         else if (buttonBoard.getRawButton(6)) {
-          climb.winchold2.set(-1);
+          climb.m_pidController2.setReference(-5000, CANSparkMax.ControlType.kVelocity);
         }
         else{
-          climb.winchold2.set(0);
+          climb.m_pidController2.setReference(-5000, CANSparkMax.ControlType.kVelocity);
         }
   
         
       }
       
+
+
 
 
      
