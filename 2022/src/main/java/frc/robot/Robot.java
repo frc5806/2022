@@ -75,8 +75,7 @@ public class Robot extends TimedRobot {
   private Limelight limelight;
   private int position1 = 0;
   private int position2 = 0;
-  private int position1Double = 0;
-  private int position2Double = 0;
+ 
   // private AHRS gyro;
   private Climb climb;
   private VictorSPX tester33;
@@ -337,12 +336,12 @@ public class Robot extends TimedRobot {
 	}*/
 	if(buttonBoard.getRawButton(1){ 
       if(bools2){
-      position1Double = position1Double+ .042;
-      position2Double = position2Double+ .042;
+      position1 = position1+ 42;
+      position2 = position2+ 42;
       }
       else{
-        position1Double=climb.m_encoder1.getPosition()+.042;
-        position2Double=climb.m_encoder2.getPosition()+.042;
+        position1=climb.m_encoder1.getPosition()+42;
+        position2=climb.m_encoder2.getPosition()+42;
       }
       bools2=true;
       
@@ -350,12 +349,12 @@ public class Robot extends TimedRobot {
     }
     else if (buttonBoard.getRawButton(2)) {
             if(!bools2){
-      position1Double = position1Double- .042;
-      position2Double = position2Double- .042;
+      position1 = position1- 42;
+      position2 = position2- 42;
       }
       else{
-        position1Double=climb.m_encoder1.getPosition()-.042;
-        position2Double=climb.m_encoder2.getPosition()-.042;
+        position1=climb.m_encoder1.getPosition()-42;
+        position2=climb.m_encoder2.getPosition()-42;
       }
       bools2=false;
       
@@ -363,26 +362,26 @@ public class Robot extends TimedRobot {
   
       else{
         if (buttonBoard.getRawButton(4)) {
-          position1Double = climb.m_encoder1.getPosition()+.042;
+          position1 = climb.m_encoder1.getPosition()+42;
         }
         else if (buttonBoard.getRawButton(3)) {
-          position1Double=climb.m_encoder1.getPosition()-.042;
+          position1=climb.m_encoder1.getPosition()-42;
         }
         else{
-          position1Double=climb.m_encoder1.getPosition()
+          position1=climb.m_encoder1.getPosition()
         if (buttonBoard.getRawButton(4)) {
-          position2Double = climb.m_encoder2.getPosition()+.042;
+          position2 = climb.m_encoder2.getPosition()+42;
         }
         else if (buttonBoard.getRawButton(3)) {
-          position2Double=climb.m_encoder12getPosition()-.042;
+          position2=climb.m_encoder12getPosition()-42;
         }
         else{
-          position2Double=climb.m_encoder2.getPosition()
+          position2=climb.m_encoder2.getPosition()
         }
       
       
     }
-        climb.winchPID((int)position1Double, (int)position2Double);
+        climb.winchPID(position1, position2);
     
           
       
