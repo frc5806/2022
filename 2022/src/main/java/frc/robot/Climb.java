@@ -44,6 +44,9 @@ public class Climb {
         climbenoid2 = new Solenoid(PneumaticsModuleType.CTREPCM, position2); // 4
         winchold1 = new CANSparkMax(victor1, MotorType.kBrushless);
         winchold2 = new CANSparkMax(victor2, MotorType.kBrushless);
+        
+        winchold1.restoreFactoryDefaults();
+        winchold2.restoreFactoryDefaults();
         enabler = false;
         climbenoid3 = new Solenoid(PneumaticsModuleType.CTREPCM, position3); // 7
         climbenoid4 = new Solenoid(PneumaticsModuleType.CTREPCM, position4); // 4
@@ -126,7 +129,7 @@ public class Climb {
     }
     public void winchStop(){
         winchold1.set(0);
-        winchold2.follow(winchold1);
+        winchold2.set(0);
     }
 
     public void armForward() {
