@@ -237,10 +237,6 @@ public class Robot extends TimedRobot {
 
     /* ------- Drive ------- */
 
-      // 0 = x-axis, 1 = y-axis, 3 = slider
-      // joystick1 --> forward and backwards
-      // joystick2 --> turning sideways
-
    // if (joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick2.getRawAxis(2) < -0.01){
    //   driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity, joystick2.getRawAxis(2)*sensitivity);
    //  } else {
