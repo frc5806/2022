@@ -60,6 +60,7 @@ public class Robot extends TimedRobot {
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick1;
   private Joystick joystick2;
+  private bools2=true;
   private Intake intake;
   private Joystick buttonBoard;
   private boolean bools = false;
@@ -305,7 +306,7 @@ public class Robot extends TimedRobot {
     /*------- Climb ------- */
   
     // winch
-      if (buttonBoard.getRawButton(1)) {
+      /*if (buttonBoard.getRawButton(1)) {
         climb.winchInPID(5000);
       }
       else if (buttonBoard.getRawButton(2)) {
@@ -331,9 +332,57 @@ public class Robot extends TimedRobot {
         else{
           climb.m_pidController2.setReference(climb.m_encoder2.getPosition(), CANSparkMax.ControlType.kPosition);
         }
-  
-        
+	}*/
+	if(buttonBoard.getRawButton(1){ 
+      if(bools2){
+      position1 = position1+ 84;
+      position2 = position2+ 84;
       }
+      else{
+        position1=climb.m_encoder1.getPosition()+84;
+        position2=climb.m_encoder2.getPosition()+84;
+      }
+      bools2=true;
+      
+      
+    }
+    else if (buttonBoard.getRawButton(2)) {
+            if(!bools2){
+      position1 = position1- 84;
+      position2 = position2- 84;
+      }
+      else{
+        position1=climb.m_encoder1.getPosition()-84;
+        position2=climb.m_encoder2.getPosition()-84;
+      }
+      bools2=false;
+      
+      }
+  
+      else{
+        if (buttonBoard.getRawButton(4)) {
+          position1 = climb.m_encoder1.getPosition()+84;
+        }
+        else if (buttonBoard.getRawButton(3)) {
+          position1=climb.m_encoder1.getPosition()+84;
+        }
+        else{
+          position1=climb.m_encoder1.getPosition()
+        if (buttonBoard.getRawButton(4)) {
+          position2 = climb.m_encoder2.getPosition()+84;
+        }
+        else if (buttonBoard.getRawButton(3)) {
+          position2=climb.m_encoder12getPosition()+84;
+        }
+        else{
+          position2=climb.m_encoder2.getPosition()
+        }
+      
+      
+    }
+        climb.winchPID(position1, position2);
+    
+          
       
 
 
