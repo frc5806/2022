@@ -337,12 +337,12 @@ public class Robot extends TimedRobot {
 	}*/
 	if(buttonBoard.getRawButton(1){ 
       if(bools2){
-      position1 = position1+ 1;
-      position2 = position2+ 1;
+      position1Double = position1Double+ .042;
+      position2Double = position2Double+ .042;
       }
       else{
-        position1=climb.m_encoder1.getPosition()+84;
-        position2=climb.m_encoder2.getPosition()+84;
+        position1Double=climb.m_encoder1.getPosition()+.042;
+        position2Double=climb.m_encoder2.getPosition()+.042;
       }
       bools2=true;
       
@@ -350,12 +350,12 @@ public class Robot extends TimedRobot {
     }
     else if (buttonBoard.getRawButton(2)) {
             if(!bools2){
-      position1 = position1- 1;
-      position2 = position2- 1;
+      position1Double = position1Double- .042;
+      position2Double = position2Double- .042;
       }
       else{
-        position1=climb.m_encoder1.getPosition()-1;
-        position2=climb.m_encoder2.getPosition()-1;
+        position1Double=climb.m_encoder1.getPosition()-.042;
+        position2Double=climb.m_encoder2.getPosition()-.042;
       }
       bools2=false;
       
@@ -363,26 +363,26 @@ public class Robot extends TimedRobot {
   
       else{
         if (buttonBoard.getRawButton(4)) {
-          position1 = climb.m_encoder1.getPosition()+1;
+          position1Double = climb.m_encoder1.getPosition()+.042;
         }
         else if (buttonBoard.getRawButton(3)) {
-          position1=climb.m_encoder1.getPosition()+1;
+          position1Double=climb.m_encoder1.getPosition()-.042;
         }
         else{
-          position1=climb.m_encoder1.getPosition()
+          position1Double=climb.m_encoder1.getPosition()
         if (buttonBoard.getRawButton(4)) {
-          position2 = climb.m_encoder2.getPosition()+1;
+          position2Double = climb.m_encoder2.getPosition()+.042;
         }
         else if (buttonBoard.getRawButton(3)) {
-          position2=climb.m_encoder12getPosition()+1;
+          position2Double=climb.m_encoder12getPosition()-.042;
         }
         else{
-          position2=climb.m_encoder2.getPosition()
+          position2Double=climb.m_encoder2.getPosition()
         }
       
       
     }
-        climb.winchPID(position1, position2);
+        climb.winchPID((int)position1Double, (int)position2Double);
     
           
       
