@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick1;
   private Joystick joystick2;
-  private bools2=true;
+  private boolean bools2=true;
   private Intake intake;
   private Joystick buttonBoard;
   private boolean bools = false;
@@ -80,6 +80,11 @@ public class Robot extends TimedRobot {
   private Climb climb;
   private VictorSPX tester33;
   private Shooter shooter;
+  private int prev1 = 0;
+  private int prev2=0;
+  private boolean prev1B=false;
+  private boolean prev2B=false;
+
   // private final I2C.Port i2cPort = I2C.Port.kOnboard;
   // private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
   //Encoder encoder = new Encoder(0, 1, true); // Add EncodingType.k4X
@@ -250,7 +255,7 @@ public class Robot extends TimedRobot {
     
 
   /* ------ Intake ----------- */
-  if (joystick2.getRawButton(0)) {
+  if (joystick2.getRawButton(1)) {
     intake.forwardIntake();
    } else if (joystick2.getRawButton(3)) {
     intake.backIntake();
@@ -334,54 +339,73 @@ public class Robot extends TimedRobot {
           climb.m_pidController2.setReference(climb.m_encoder2.getPosition(), CANSparkMax.ControlType.kPosition);
         }
 	}*/
-	if(buttonBoard.getRawButton(1){ 
+	if(buttonBoard.getRawButton(1)){ 
       if(bools2){
-      position1 = position1+ 42;
-      position2 = position2+ 42;
+      position1 = position1+ 11;
+      position2 = position2- 11;
       }
       else{
-        position1=climb.m_encoder1.getPosition()+42;
-        position2=climb.m_encoder2.getPosition()+42;
+        position1=(int)climb.m_encoder1.getPosition()+11;
+        position2=-(int)climb.m_encoder2.getPosition()+11;
       }
       bools2=true;
+      prev1B=true;
+      prev2B=true;
       
       
     }
     else if (buttonBoard.getRawButton(2)) {
             if(!bools2){
-      position1 = position1- 42;
-      position2 = position2- 42;
+      position1 = position1- 11;
+      position2 = position2+ 11;
       }
       else{
-        position1=climb.m_encoder1.getPosition()-42;
-        position2=climb.m_encoder2.getPosition()-42;
+        position1=(int)climb.m_encoder1.getPosition()-11;
+        position2=-(int)climb.m_encoder2.getPosition()+11;
       }
       bools2=false;
+      prev1B=true;
+      prev2B=true;
       
       }
   
       else{
         if (buttonBoard.getRawButton(4)) {
-          position1 = climb.m_encoder1.getPosition()+42;
+          prev1B=true;
+          position1 = (int)climb.m_encoder1.getPosition()+11;
         }
         else if (buttonBoard.getRawButton(3)) {
-          position1=climb.m_encoder1.getPosition()-42;
+          prev1B=true;
+          position1=(int)climb.m_encoder1.getPosition()-11;
         }
         else{
-          position1=climb.m_encoder1.getPosition()
-        if (buttonBoard.getRawButton(4)) {
-          position2 = climb.m_encoder2.getPosition()+42;
+          if(prev1B){
+          position1=(int)climb.m_encoder1.getPosition();
+          }
+          prev1B=false;
         }
-        else if (buttonBoard.getRawButton(3)) {
-          position2=climb.m_encoder12getPosition()-42;
+        if (buttonBoard.getRawButton(5)) {
+          position2 = -(int)climb.m_encoder2.getPosition()-11;
+          prev2B=true;
+        }
+        else if (buttonBoard.getRawButton(6)) {
+          position2=-(int)climb.m_encoder2.getPosition()+11;
+          prev2B=true;
+          
         }
         else{
-          position2=climb.m_encoder2.getPosition()
+          if(prev2B){
+          position2=-(int)climb.m_encoder2.getPosition();
+          }
+          prev2B=false;
         }
+
       
       
     }
-        climb.winchPID(position1, position2);
+  
+  climb.winchPID(position1, position2);
+     
     
           
       

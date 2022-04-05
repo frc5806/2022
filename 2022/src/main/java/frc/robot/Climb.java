@@ -30,9 +30,10 @@ public class Climb {
     private SparkMaxPIDController m_pidController1;
     private SparkMaxPIDController m_pidController2;
     
-    private RelativeEncoder m_encoder1;
-    private RelativeEncoder m_encoder2;
+    public RelativeEncoder m_encoder1;
+    public RelativeEncoder m_encoder2;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
+    public double kP2, kI2, kD2, kIz2, kFF2, kMaxOutput2, kMinOutput2;
 
     public CANSparkMax winchold1;
     public CANSparkMax winchold2;
@@ -55,15 +56,15 @@ public class Climb {
         climbenoid2.set(false);
         climbenoid3.set(false);
          
-        m_pidController1 = winchhold1.getPIDController();
+        m_pidController1 = winchold1.getPIDController();
 
     // Encoder object created to display position values
-        m_encoder1 = winchhold1.getEncoder();
+        m_encoder1 = winchold1.getEncoder();
         
-        m_pidController2 = winchhold2.getPIDController();
+        m_pidController2 = winchold2.getPIDController();
 
     // Encoder object created to display position values
-        m_encoder2 = winchhold2.getEncoder();
+        m_encoder2 = winchold2.getEncoder();
 
         winchold1.setIdleMode(IdleMode.kBrake);
         winchold1.setIdleMode(IdleMode.kBrake);
@@ -106,9 +107,9 @@ public class Climb {
         compressor.enableHybrid(40, 80);
     }
     
-    public void winchPID(position){
-        m_pidController1.setReference(position, CANSparkMax.ControlType.kPosition);
-        m_pidController2.setReference(-position, CANSparkMax.ControlType.kPosition);
+    public void winchPID(int position1, int position2){
+        m_pidController1.setReference(position1, CANSparkMax.ControlType.kPosition);
+        m_pidController2.setReference(-position2, CANSparkMax.ControlType.kPosition);
     }
     
     

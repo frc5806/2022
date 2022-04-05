@@ -31,7 +31,7 @@ public class Intake {
     }
 
     public void forwardIntake() {
-        intake1.set(-.5);
+        intake1.set(-.6);
     }
 
     public void forwardHopper() {
