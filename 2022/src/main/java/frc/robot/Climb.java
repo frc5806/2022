@@ -67,7 +67,7 @@ public class Climb {
 
         winchold1.setIdleMode(IdleMode.kBrake);
         winchold1.setIdleMode(IdleMode.kBrake);
-        kP = 0.1; 
+        kP = 0.5; 
         kI = 1e-4;
         kD = 0; 
         kIz = 0; 
