@@ -318,7 +318,7 @@ public class Robot extends TimedRobot {
           climb.m_pidController1.setReference(5000, CANSparkMax.ControlType.kVelocity);
         }
         else{
-          climb.m_pidController1.setReference(0, CANSparkMax.ControlType.kVelocity);
+          climb.m_pidController1.setReference(climb.m_encoder1.getPosition(), CANSparkMax.ControlType.kPosition);
         }
         if (buttonBoard.getRawButton(5)) {
           climb.m_pidController2.setReference(5000, CANSparkMax.ControlType.kVelocity);
@@ -327,7 +327,7 @@ public class Robot extends TimedRobot {
           climb.m_pidController2.setReference(-5000, CANSparkMax.ControlType.kVelocity);
         }
         else{
-          climb.m_pidController2.setReference(-5000, CANSparkMax.ControlType.kVelocity);
+          climb.m_pidController2.setReference(climb.m_encoder2.getPosition(), CANSparkMax.ControlType.kPosition);
         }
   
         
