@@ -83,12 +83,20 @@ public class Climb {
         m_pidController1.setFF(kFF);
         m_pidController1.setOutputRange(kMinOutput, kMaxOutput);
         
-        m_pidController2.setP(kP);
-        m_pidController2.setI(kI);
-        m_pidController2.setD(kD);
-        m_pidController2.setIZone(kIz);
-        m_pidController2.setFF(kFF);
-        m_pidController2.setOutputRange(kMinOutput, kMaxOutput);
+        
+        kP2 = 0.5; 
+        kI2 = 1e-4;
+        kD2 = 0; 
+        kIz2 = 0; 
+        kFF2 = 0; 
+        kMaxOutput2 = 1; 
+        kMinOutput2 = -1;
+        m_pidController2.setP(kP2);
+        m_pidController2.setI(kI2);
+        m_pidController2.setD(kD2);
+        m_pidController2.setIZone(kIz2);
+        m_pidController2.setFF(kFF2);
+        m_pidController2.setOutputRange(kMinOutput2, kMaxOutput2);
         
         
 
