@@ -123,8 +123,8 @@ public class Robot extends TimedRobot {
     shooter = new Shooter(7, 6, 20);    
     position1=0;
     position2=0;
-    prev1B=false;
-    prev2B=false;
+    prev1B=true;
+    prev2B=true;
     intake = new Intake(9, 37, 2, 3);
     led= new LED(8, 88);
     direction=1;
