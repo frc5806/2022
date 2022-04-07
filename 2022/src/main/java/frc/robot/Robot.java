@@ -357,8 +357,7 @@ public class Robot extends TimedRobot {
         }
 	}*/
 
-  double oldPosition = position1;
-  double oldPosition2 = position2;
+  
 
 	if(buttonBoard.getRawButton(1)){ 
       if(bools2){
@@ -393,11 +392,11 @@ public class Robot extends TimedRobot {
       else{
         if (buttonBoard.getRawButton(4)) {
           prev1B=true;
-          position1 = (int)climb.m_encoder1.getPosition()+11;
+          position1 = position1 +11;
         } 
         else if (buttonBoard.getRawButton(3)) {
           prev1B=true;
-          position1=(int)climb.m_encoder1.getPosition()-11;
+          position1=position1-11;
         }
         else{
           if(prev1B){
@@ -406,11 +405,11 @@ public class Robot extends TimedRobot {
           prev1B=false;
         }
         if (buttonBoard.getRawButton(5)) {
-          position2 = -(int)climb.m_encoder2.getPosition()-11;
+          position2 = position2-11;
           prev2B=true;
         }
         else if (buttonBoard.getRawButton(6)) {
-          position2=-(int)climb.m_encoder2.getPosition()+11;
+          position2=position211;
           prev2B=true;
           
         }
@@ -425,9 +424,9 @@ public class Robot extends TimedRobot {
       
     }
 
-  if (oldPosition - position1 != 0 || oldPosition2 - position2 != 0){
-    climb.winchPID(position1, position2);
-  }
+ 
+   climb.winchPID(position1, position2);
+  
      
     
           
