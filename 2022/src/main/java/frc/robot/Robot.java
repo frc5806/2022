@@ -66,6 +66,8 @@ public class Robot extends TimedRobot {
   private Joystick buttonBoard;
   private boolean bools = false;
   private double sensitivity = 1;
+  private double startTime;
+  private Timer timer;
   //private Compressor compressor;
   
   private LED led;
@@ -117,6 +119,7 @@ public class Robot extends TimedRobot {
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
   //m_robotContainer = new RobotContainer();
     joystick1 = new Joystick(0);
+    timer = new Timer();
     buttonBoard = new Joystick(1);    
     joystick2 = new Joystick(2);
     climb = new Climb(7,4,11,13,5,6);
@@ -170,7 +173,8 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
   //  auto.startTimeSet();
-
+    timer.start();
+    startTime = timer.get();
   }
 
  
@@ -179,52 +183,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    //switch (m_autoSelected) {
-     // case kCustomAuto:
-        // Put custom auto code here
-   /* auto.driveColor(1,"blue", .3, .2, 0, 2);
-    auto.driveTime(2,2, 0, 0, 3 );
-    auto.driveTime(3,2,0,.3, 4);
-    auto.driveTime(4, 100, 0, 0, 4);*/
-
-    // each case refers to each starting position
-  /*  if (casire == 1) {  
-
-      auto.driveDistance(1, 72, 2);
-      auto.driveTurn(2,90,3);
-      auto.driveDistance(3,22*12,4);
-      auto.driveTime(4, 1000, 0, 0, 4);
-
-    } else if (casire == 2) {  
-
-      auto.driveTurn(1, 210, 2);
-      auto.driveDistance(3,19*12,4);
-      auto.driveTime(4, 1000, 0, 0, 4);
-
-    } else if (casire == 3) {  
-
-      auto.driveTurn(1, 203, 2);
-      auto.driveDistance(3,20*12,4);
-      auto.driveTime(4, 1000, 0, 0, 4);
-
-    } else {  
-
-      auto.driveDistance(1, 96, 2);
-      auto.driveTurn(2,270,3);
-      auto.driveDistance(3,22*12,4);
-      auto.driveTime(4, 1000, 0, 0, 4);
-
-    }*/
-
-    //double encoderDistanceReading = encoder.getDistance();
-		//SmartDashboard.putNumber("encoder reading", encoderDistanceReading);
-		
-	//	drive.drive(-0.25, 0);
-	/*	if (encoderDistanceReading > 36) {
-			drive.drive(0, 0);
-		} 
-    //driveTillWall(-0.3, 80, 110);
-    */
+    if(timer.get()-startTime<5){
+      shooter.shoot(1);
+      driveSpark.arcadeDrive(0, 0);
+    }
+    else if(timer.get()-startTime<20){
+      shooter.dontShoot();
+      driveSpark.arcadeDrive(.2,0)
+    }
+    else{
+      shooter.dontShoot();
+      driveSpark.arcadeDrive(0,0)
+    }
   }
 
  
