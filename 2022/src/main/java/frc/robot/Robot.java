@@ -360,14 +360,12 @@ public class Robot extends TimedRobot {
   
 
 	if(buttonBoard.getRawButton(1)){ 
-      if(bools2){
+      
        position1 = position1+ 11;
        position2 = position2- 11;
-       }
-       else{
-        position1=(int)climb.m_encoder1.getPosition()+11;
-        position2=-(int)climb.m_encoder2.getPosition()-11;
-      }
+       
+
+      
       bools2=true;
       prev1B=true;
       prev2B=true;
@@ -375,14 +373,10 @@ public class Robot extends TimedRobot {
       
     }
     else if (buttonBoard.getRawButton(2)) {
-            if(!bools2){
+           
        position1 =  position1- 11;
        position2 = position2+ 11;
-       }
-       else{
-        position1=(int)climb.m_encoder1.getPosition()-11;
-        position2=-(int)climb.m_encoder2.getPosition()+11;
-      }
+      
       bools2=false;
       prev1B=true;
       prev2B=true;
