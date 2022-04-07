@@ -409,7 +409,7 @@ public class Robot extends TimedRobot {
           prev2B=true;
         }
         else if (buttonBoard.getRawButton(6)) {
-          position2=position211;
+          position2=position2+11;
           prev2B=true;
           
         }
