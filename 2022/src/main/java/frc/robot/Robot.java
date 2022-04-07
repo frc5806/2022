@@ -189,11 +189,11 @@ public class Robot extends TimedRobot {
     }
     else if(timer.get()-startTime<20){
       shooter.dontShoot();
-      driveSpark.arcadeDrive(.2,0)
+      driveSpark.arcadeDrive(.2,0);
     }
     else{
       shooter.dontShoot();
-      driveSpark.arcadeDrive(0,0)
+      driveSpark.arcadeDrive(0,0);
     }
   }
 
