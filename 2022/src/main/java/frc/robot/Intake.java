@@ -30,8 +30,8 @@ public class Intake {
        
     }
 
-    public void forwardIntake() {
-        intake1.set(-.6);
+    public void forwardIntake(double speed) {
+        intake1.set(speed);
     }
 
     public void forwardHopper() {

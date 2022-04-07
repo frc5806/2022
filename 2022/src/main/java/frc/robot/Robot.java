@@ -60,6 +60,7 @@ public class Robot extends TimedRobot {
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick1;
   private Joystick joystick2;
+  private int direction;
   private boolean bools2=true;
   private Intake intake;
   private Joystick buttonBoard;
@@ -84,6 +85,7 @@ public class Robot extends TimedRobot {
   private int prev2=0;
   private boolean prev1B=false;
   private boolean prev2B=false;
+  private double reverse = 1;
 
   // private final I2C.Port i2cPort = I2C.Port.kOnboard;
   // private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
@@ -119,9 +121,13 @@ public class Robot extends TimedRobot {
     joystick2 = new Joystick(2);
     climb = new Climb(7,4,11,13,5,6);
     shooter = new Shooter(7, 6, 20);    
-    
+    position1=0;
+    position2=0;
+    prev1B=false;
+    prev2B=false;
     intake = new Intake(9, 37, 2, 3);
     led= new LED(8, 88);
+    direction=1;
     limelight = new Limelight();
   //  auto = new Auto(limelight);
     driveSpark = new DriveSubsystem();    
@@ -229,8 +235,11 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
     System.out.println("teleop"); 
+    // if(joystick2.getRawButton(6)){
+    //   direction=-1*direction;
+    // }
 
-    sensitivity  = .5 + joystick2.getRawAxis(4)/2;
+    sensitivity  = 0.5 - joystick2.getRawAxis(3)/2;
     
     //comp.start();
    // compressor.enableDigital();
@@ -246,17 +255,25 @@ public class Robot extends TimedRobot {
 
     /* ------- Drive ------- */
 
-   // if (joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick2.getRawAxis(2) < -0.01){
-   //   driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity, joystick2.getRawAxis(2)*sensitivity);
-   //  } else {
-    //   System.out.println("hello");
-    //   driveSpark.arcadeDrive(0, 0);
-    // }
+   if (joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick2.getRawAxis(2) < -0.01){
+     driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity *reverse, joystick2.getRawAxis(2)*sensitivity*reverse);
+    } else {
+      System.out.println("hello");
+      driveSpark.arcadeDrive(0, 0);
+    }
+
+    // Reverse drive
+    if (joystick2.getRawButton(8)){
+      reverse = 1;
+    }
+    if (joystick2.getRawButton(10)){
+      reverse = -1;
+    }
     
 
   /* ------ Intake ----------- */
   if (joystick2.getRawButton(1)) {
-    intake.forwardIntake();
+    intake.forwardIntake(-0.65);
    } else if (joystick2.getRawButton(3)) {
     intake.backIntake();
    } else  {
@@ -339,14 +356,18 @@ public class Robot extends TimedRobot {
           climb.m_pidController2.setReference(climb.m_encoder2.getPosition(), CANSparkMax.ControlType.kPosition);
         }
 	}*/
+
+  double oldPosition = position1;
+  double oldPosition2 = position2;
+
 	if(buttonBoard.getRawButton(1)){ 
       if(bools2){
-      position1 = position1+ 11;
-      position2 = position2- 11;
-      }
-      else{
+       position1 = position1+ 11;
+       position2 = position2- 11;
+       }
+       else{
         position1=(int)climb.m_encoder1.getPosition()+11;
-        position2=-(int)climb.m_encoder2.getPosition()+11;
+        position2=-(int)climb.m_encoder2.getPosition()-11;
       }
       bools2=true;
       prev1B=true;
@@ -356,10 +377,10 @@ public class Robot extends TimedRobot {
     }
     else if (buttonBoard.getRawButton(2)) {
             if(!bools2){
-      position1 = position1- 11;
-      position2 = position2+ 11;
-      }
-      else{
+       position1 = position1- 11;
+       position2 = position2+ 11;
+       }
+       else{
         position1=(int)climb.m_encoder1.getPosition()-11;
         position2=-(int)climb.m_encoder2.getPosition()+11;
       }
@@ -373,7 +394,7 @@ public class Robot extends TimedRobot {
         if (buttonBoard.getRawButton(4)) {
           prev1B=true;
           position1 = (int)climb.m_encoder1.getPosition()+11;
-        }
+        } 
         else if (buttonBoard.getRawButton(3)) {
           prev1B=true;
           position1=(int)climb.m_encoder1.getPosition()-11;
@@ -403,8 +424,10 @@ public class Robot extends TimedRobot {
       
       
     }
-  
-  climb.winchPID(position1, position2);
+
+  if (oldPosition - position1 != 0 || oldPosition2 - position2 != 0){
+    climb.winchPID(position1, position2);
+  }
      
     
           
