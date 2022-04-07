@@ -361,8 +361,8 @@ public class Robot extends TimedRobot {
 
 	if(buttonBoard.getRawButton(1)){ 
       
-       position1 = position1+ 11;
-       position2 = position2- 11;
+      position1 = position1+ 11;
+      position2 = position2- 11;
        
 
       
@@ -374,8 +374,8 @@ public class Robot extends TimedRobot {
     }
     else if (buttonBoard.getRawButton(2)) {
            
-       position1 =  position1- 11;
-       position2 = position2+ 11;
+      position1 =  position1- 11;
+      position2 = position2+ 11;
       
       bools2=false;
       prev1B=true;
