@@ -55,6 +55,7 @@ public class Climb {
         climbenoid1.set(false);
         climbenoid2.set(false);
         climbenoid3.set(false);
+        climbenoid4.set(false);
          
         m_pidController1 = winchold1.getPIDController();
 
