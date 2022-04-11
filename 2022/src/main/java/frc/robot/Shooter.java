@@ -95,7 +95,9 @@ public class Shooter {
 
     public void setSpeedPID(double vel){
         pid1.setReference(vel, CANSparkMax.ControlType.kVelocity);
-        pid2.setReference(vel, CANSparkMax.ControlType.kPVelocity);
+        pid2.setReference(vel, CANSparkMax.ControlType.kVelocity);
+        shooter3.set(ControlMode.PercentOutput, vel/5800);
+        
     }
 
     public void dontShoot() {

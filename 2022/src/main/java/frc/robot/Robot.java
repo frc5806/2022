@@ -388,7 +388,7 @@ public class Robot extends TimedRobot {
     }
 
  
-   climb.winchPID(position1, position2);
+   climb.update(position1, position2);
   
      
     
