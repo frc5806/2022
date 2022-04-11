@@ -93,9 +93,9 @@ public class Shooter {
         }
     }
 
-    public void setSpeedPID(double position){
-        pid1.setReference(position, CANSparkMax.ControlType.kPosition);
-        pid2.setReference(position, CANSparkMax.ControlType.kPosition);
+    public void setSpeedPID(double vel){
+        pid1.setReference(vel, CANSparkMax.ControlType.kVelocity);
+        pid2.setReference(vel, CANSparkMax.ControlType.kPVelocity);
     }
 
     public void dontShoot() {
