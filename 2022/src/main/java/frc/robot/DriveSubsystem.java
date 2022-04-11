@@ -50,7 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final RelativeEncoder m_rightEncoder = driveR1.getAlternateEncoder(4260);
 
   // The gyro sensor
-  private final Gyro m_gyro = new ADXRS450_Gyro();
+  private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
