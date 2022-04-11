@@ -9,16 +9,21 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 public class Shooter {
+    private final Limelight limelight;
+    private final Constants constants;
     static public CANSparkMax shooter1;
     static public CANSparkMax shooter2;
     static public VictorSPX shooter3;
 
     static public double speed;
+    private double targetRPM;
 
-    public Shooter(int CANID1,int CANID2,int CANID3) {
+    public Shooter(int CANID1,int CANID2,int CANID3, Limelight limelight) {
+        this.limelight = limelight;
         shooter1 = new CANSparkMax(CANID1, MotorType.kBrushless);
         shooter2 = new CANSparkMax(CANID2, MotorType.kBrushless);
         shooter3 = new VictorSPX(CANID3);
+        constants = new Constants();
         speed = 0;
         
         
@@ -49,6 +54,20 @@ public class Shooter {
         shooter1.set(0);
         shooter2.set(0);
         shooter3.set(ControlMode.PercentOutput, 0);
+    }
+
+
+    public void shootLL(){
+        double distance = limelight.getDistanceFromTarget() + 0.5;
+        //                                                     ^
+        // may have to alter based on tested + position of limelight
+        if(distance <= 30)
+            targetRPM = (distance * 34.1) + 2505;
+        else
+        // set constant speed if more than 30 inches
+            targetRPM = 3750;
+
+        shoot(targetRPM/Constants.maxRPM);
     }
 
 }

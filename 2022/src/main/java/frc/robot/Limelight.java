@@ -39,6 +39,9 @@ public class Limelight {
     double Kp = -0.1;
     double steering_adjust;
 
+    public double getDistanceFromTarget(){
+        return distanceFromLimelightToGoalInches;
+    }
     
     /*---- Aiming---- */
 

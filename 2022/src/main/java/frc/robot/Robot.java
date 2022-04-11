@@ -81,7 +81,6 @@ public class Robot extends TimedRobot {
  
   // private AHRS gyro;
   private Climb climb;
-  private VictorSPX tester33;
   private Shooter shooter;
   private int prev1 = 0;
   private int prev2=0;
@@ -118,12 +117,13 @@ public class Robot extends TimedRobot {
    // m_chooser.addOption("My Auto", kCustomAuto);
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
   //m_robotContainer = new RobotContainer();
-    joystick1 = new Joystick(0);
     timer = new Timer();
-    buttonBoard = new Joystick(1);    
+    joystick1 = new Joystick(0);
     joystick2 = new Joystick(2);
+    buttonBoard = new Joystick(1);   
     climb = new Climb(7,4,11,13,5,6);
-    shooter = new Shooter(7, 6, 20);    
+    limelight = new Limelight();
+    shooter = new Shooter(7, 6, 20, limelight);    
     position1=0;
     position2=0;
     prev1B=true;
@@ -131,7 +131,6 @@ public class Robot extends TimedRobot {
     intake = new Intake(9, 37, 2, 3);
     led= new LED(8, 88);
     direction=1;
-    limelight = new Limelight();
   //  auto = new Auto(limelight);
     driveSpark = new DriveSubsystem();    
 
