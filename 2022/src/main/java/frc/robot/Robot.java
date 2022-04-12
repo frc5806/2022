@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.sql.Time;
+import java.io.IOException;
+import java.nio.file.Path;
 
 import static edu.wpi.first.wpilibj.XboxController.Button;
 
@@ -31,6 +33,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,7 +45,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import java.util.List;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.wpilibj.Filesystem;
 
 import edu.wpi.first.wpilibj.SPI;
 
@@ -140,6 +145,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    String trajectoryJSON = "paths/YourPath.wpilib.json";
    
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
@@ -161,7 +167,14 @@ public class Robot extends TimedRobot {
     led= new LED(8, 88);
     direction=1;
   //  auto = new Auto(limelight);
-    driveSpark = new DriveSubsystem();    
+    driveSpark = new DriveSubsystem(); 
+    try {
+    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+    m_trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    }
+    catch(IOException ex){
+      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+    }
    
 
     // Reuse buffer
