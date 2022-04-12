@@ -91,6 +91,8 @@ public class Robot extends TimedRobot {
   private double sensitivity = 1;
   private double startTime;
   private Timer timer;
+  String trajectoryJSON;
+  Trajectory trajectory;
   private Constants constants=new Constants();
   //private Compressor compressor;
   
@@ -130,7 +132,7 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand(Trajectory trajectory) {
 
     // Create a voltage constraint to ensure we don't accelerate too fast
     var autoVoltageConstraint =
@@ -166,7 +168,7 @@ public class Robot extends TimedRobot {
 
     RamseteCommand ramseteCommand =
         new RamseteCommand(
-            exampleTrajectory,
+            trajectory,
             driveSpark::getPose,
             new RamseteController(constants.kRamseteB, constants.kRamseteZeta),
             new SimpleMotorFeedforward(
@@ -194,6 +196,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+    trajectoryJSON = "paths/YourPath.wpilib.json";
+    trajectory = new Trajectory();
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
@@ -253,9 +257,10 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
   //  auto.startTimeSet();
+    
     timer.start();
     startTime = timer.get();
-    getAutonomousCommand()
+    getAutonomousCommand(trajectory).schedule();
   }
 
  
@@ -264,7 +269,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    
+    CommandScheduler.getInstance().run();
   }
 
  
