@@ -61,6 +61,12 @@ public class DriveSubsystem extends SubsystemBase {
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
     m_rightMotors.setInverted(true);
+    driveL1.setSmartCurrentLimit(20);
+    driveL2.setSmartCurrentLimit(20);
+    driveL3.setSmartCurrentLimit(20);
+    driveR1.setSmartCurrentLimit(20);
+    driveR2.setSmartCurrentLimit(20);
+    driveR3.setSmartCurrentLimit(20);
 
     // Sets the distance per pulse for the encoders
     //m_leftEncoder.setDistancePerPulse(driveConstants.kEncoderDistancePerPulse);

@@ -13,11 +13,34 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.sql.Time;
+
+import static edu.wpi.first.wpilibj.XboxController.Button;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import java.util.List;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 import edu.wpi.first.wpilibj.SPI;
 
@@ -68,6 +91,9 @@ public class Robot extends TimedRobot {
   private double sensitivity = 1;
   private double startTime;
   private Timer timer;
+  String trajectoryJSON;
+  Trajectory trajectory;
+  private Constants constants=new Constants();
   //private Compressor compressor;
   
   private LED led;
@@ -78,6 +104,7 @@ public class Robot extends TimedRobot {
   private Limelight limelight;
   private int position1 = 0;
   private int position2 = 0;
+  private double shooterSensitivity;
  
   // private AHRS gyro;
   private Climb climb;
@@ -106,18 +133,78 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
+  public Command getAutonomousCommand(Trajectory trajectory) {
 
+    // Create a voltage constraint to ensure we don't accelerate too fast
+    var autoVoltageConstraint =
+        new DifferentialDriveVoltageConstraint(
+            new SimpleMotorFeedforward(
+                constants.ksVolts,
+                constants.kvVoltSecondsPerMeter,
+                constants.kaVoltSecondsSquaredPerMeter),
+            constants.kDriveKinematics,
+            10);
+
+    // Create config for trajectory
+    TrajectoryConfig config =
+        new TrajectoryConfig(
+                constants.kMaxSpeedMetersPerSecond,
+                constants.kMaxAccelerationMetersPerSecondSquared)
+            // Add kinematics to ensure max speed is actually obeyed
+            .setKinematics(constants.kDriveKinematics)
+            // Apply the voltage constraint
+            .addConstraint(autoVoltageConstraint);
+
+    // An example trajectory to follow.  All units in meters.
+    Trajectory exampleTrajectory =
+        TrajectoryGenerator.generateTrajectory(
+            // Start at the origin facing the +X direction
+            new Pose2d(0, 0, new Rotation2d(0)),
+            // Pass through these two interior waypoints, making an 's' curve path
+            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+            // End 3 meters straight ahead of where we started, facing forward
+            new Pose2d(3, 0, new Rotation2d(0)),
+            // Pass config
+            config);
+
+    RamseteCommand ramseteCommand =
+        new RamseteCommand(
+            trajectory,
+            driveSpark::getPose,
+            new RamseteController(constants.kRamseteB, constants.kRamseteZeta),
+            new SimpleMotorFeedforward(
+                constants.ksVolts,
+                constants.kvVoltSecondsPerMeter,
+                constants.kaVoltSecondsSquaredPerMeter),
+            constants.kDriveKinematics,
+            driveSpark::getWheelSpeeds,
+            new PIDController(constants.kPDriveVel, 0, 0),
+            new PIDController(constants.kPDriveVel, 0, 0),
+            // RamseteCommand passes volts to the callback
+            driveSpark::tankDriveVolts,
+            driveSpark);
+
+    // Reset odometry to the starting pose of the trajectory.
+    driveSpark.resetOdometry(exampleTrajectory.getInitialPose());
+
+    // Run path following command, then stop at the end.
+    return ramseteCommand.andThen(() -> driveSpark.tankDriveVolts(0, 0));
+  }
+}
   
 
 
 
   @Override
   public void robotInit() {
+    trajectoryJSON = "paths/YourPath.wpilib.json";
+    trajectory = new Trajectory();
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
   //m_robotContainer = new RobotContainer();
     timer = new Timer();
+    shooterSensitivity=1;
     joystick1 = new Joystick(0);
     joystick2 = new Joystick(2);
     buttonBoard = new Joystick(1);   
@@ -133,6 +220,8 @@ public class Robot extends TimedRobot {
     direction=1;
   //  auto = new Auto(limelight);
     driveSpark = new DriveSubsystem();    
+    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+    trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
 
 
     // Reuse buffer
@@ -172,8 +261,10 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
   //  auto.startTimeSet();
+    
     timer.start();
     startTime = timer.get();
+    getAutonomousCommand(trajectory).schedule();
   }
 
  
@@ -182,18 +273,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    if(timer.get()-startTime<5){
-      shooter.shoot(1);
-      driveSpark.arcadeDrive(0, 0);
-    }
-    else if(timer.get()-startTime<20){
-      shooter.dontShoot();
-      driveSpark.arcadeDrive(.2,0);
-    }
-    else{
-      shooter.dontShoot();
-      driveSpark.arcadeDrive(0,0);
-    }
+    CommandScheduler.getInstance().run();
   }
 
  
@@ -209,6 +289,7 @@ public class Robot extends TimedRobot {
     // }
 
     sensitivity  = 0.5 - joystick2.getRawAxis(3)/2;
+    shooterSensitivity  = 0.5 - joystick1.getRawAxis(3)/2;
     
     //comp.start();
    // compressor.enableDigital();
@@ -275,20 +356,22 @@ public class Robot extends TimedRobot {
 
     /* ------------ Shooter --------- */
     if (joystick1.getRawButton(1)){
-      shooter.shoot(1); // takes in speed
+      shooter.setSpeedPID(5600*shooterSensitivity); // takes in speed
       led.inShot=true;
     }
     else if( joystick1.getRawButton(3)){
-      shooter.shoot(.5);
+      shooter.setSpeedPID(5600*.5)
       led.inShot=true;
     }
     else{
-      shooter.dontShoot();
+      shooter.setSpeedPID(0);
       led.inShot=false;
     }
     if(joystick1.getRawButtonReleased(1) || joystick1.getRawButtonReleased(3)){
       led.changeMode();
     }
+
+    shooter.update();
     
     System.out.println(shooter.shooter1.isFollower());
 
