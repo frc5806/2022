@@ -104,6 +104,7 @@ public class Robot extends TimedRobot {
   private Limelight limelight;
   private int position1 = 0;
   private int position2 = 0;
+  private double shooterSensitivity;
  
   // private AHRS gyro;
   private Climb climb;
@@ -203,6 +204,7 @@ public class Robot extends TimedRobot {
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
   //m_robotContainer = new RobotContainer();
     timer = new Timer();
+    shooterSensitivity=1;
     joystick1 = new Joystick(0);
     joystick2 = new Joystick(2);
     buttonBoard = new Joystick(1);   
@@ -287,6 +289,7 @@ public class Robot extends TimedRobot {
     // }
 
     sensitivity  = 0.5 - joystick2.getRawAxis(3)/2;
+    shooterSensitivity  = 0.5 - joystick1.getRawAxis(3)/2;
     
     //comp.start();
    // compressor.enableDigital();
@@ -353,20 +356,22 @@ public class Robot extends TimedRobot {
 
     /* ------------ Shooter --------- */
     if (joystick1.getRawButton(1)){
-      shooter.shoot(1); // takes in speed
+      shooter.setSpeedPID(5600*shooterSensitivity); // takes in speed
       led.inShot=true;
     }
     else if( joystick1.getRawButton(3)){
-      shooter.shoot(.5);
+      shooter.setSpeedPID(5600*.5)
       led.inShot=true;
     }
     else{
-      shooter.dontShoot();
+      shooter.setSpeedPID(0);
       led.inShot=false;
     }
     if(joystick1.getRawButtonReleased(1) || joystick1.getRawButtonReleased(3)){
       led.changeMode();
     }
+
+    shooter.update();
     
     System.out.println(shooter.shooter1.isFollower());
 

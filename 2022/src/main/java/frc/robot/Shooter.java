@@ -17,6 +17,7 @@ public class Shooter {
     static public CANSparkMax shooter2;
     private final SparkMaxPIDController pid1;
     private final SparkMaxPIDController pid2;
+    private int velocity;
 
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
     public double kP2, kI2, kD2, kIz2, kFF2, kMaxOutput2, kMinOutput2;
@@ -94,10 +95,14 @@ public class Shooter {
     }
 
     public void setSpeedPID(double vel){
-        pid1.setReference(vel, CANSparkMax.ControlType.kVelocity);
-        pid2.setReference(vel, CANSparkMax.ControlType.kVelocity);
-        shooter3.set(ControlMode.PercentOutput, vel/5800);
+        velocity=vel
         
+    }
+
+    public void update(){
+        pid1.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+        pid2.setReference(velocity, CANSparkMax.ControlType.kVelocity);
+        shooter3.set(ControlMode.PercentOutput, velocity/5800);
     }
 
     public void dontShoot() {
