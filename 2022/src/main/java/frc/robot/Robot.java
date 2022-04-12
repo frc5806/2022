@@ -227,9 +227,9 @@ public class Robot extends TimedRobot {
         var refChassisSpeeds = m_ramseteController.calculate(driveSpark.getPose(), desiredPose);
   
         // Set the linear and angular speeds.
-        driveSpark.drive(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
+        driveSpark.drive2(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
       } else {
-        driveSpark.drive(0, 0);
+        driveSpark.drive2(0, 0);
       }
   }
 
@@ -263,10 +263,10 @@ public class Robot extends TimedRobot {
     /* ------- Drive ------- */
 
    if (joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick2.getRawAxis(2) < -0.01){
-     driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity *reverse, joystick2.getRawAxis(2)*sensitivity*reverse);
+     driveSpark.drive(joystick2.getRawAxis(1) * sensitivity *reverse, joystick2.getRawAxis(2)*sensitivity*reverse);
     } else {
       System.out.println("hello");
-      driveSpark.arcadeDrive(0, 0);
+      driveSpark.drive(0, 0);
     }
 
     // Reverse drive
