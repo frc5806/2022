@@ -91,8 +91,7 @@ public class Robot extends TimedRobot {
   private double sensitivity = 1;
   private double startTime;
   private Timer timer;
-  String trajectoryJSON;
-  Trajectory trajectory;
+  
   private Constants constants=new Constants();
   //private Compressor compressor;
   
@@ -133,72 +132,13 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
-  public Command getAutonomousCommand(Trajectory trajectory) {
-
-    // Create a voltage constraint to ensure we don't accelerate too fast
-    var autoVoltageConstraint =
-        new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(
-                constants.ksVolts,
-                constants.kvVoltSecondsPerMeter,
-                constants.kaVoltSecondsSquaredPerMeter),
-            constants.kDriveKinematics,
-            10);
-
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(
-                constants.kMaxSpeedMetersPerSecond,
-                constants.kMaxAccelerationMetersPerSecondSquared)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(constants.kDriveKinematics)
-            // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
-
-    // An example trajectory to follow.  All units in meters.
-    Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(3, 0, new Rotation2d(0)),
-            // Pass config
-            config);
-
-    RamseteCommand ramseteCommand =
-        new RamseteCommand(
-            trajectory,
-            driveSpark::getPose,
-            new RamseteController(constants.kRamseteB, constants.kRamseteZeta),
-            new SimpleMotorFeedforward(
-                constants.ksVolts,
-                constants.kvVoltSecondsPerMeter,
-                constants.kaVoltSecondsSquaredPerMeter),
-            constants.kDriveKinematics,
-            driveSpark::getWheelSpeeds,
-            new PIDController(constants.kPDriveVel, 0, 0),
-            new PIDController(constants.kPDriveVel, 0, 0),
-            // RamseteCommand passes volts to the callback
-            driveSpark::tankDriveVolts,
-            driveSpark);
-
-    // Reset odometry to the starting pose of the trajectory.
-    driveSpark.resetOdometry(exampleTrajectory.getInitialPose());
-
-    // Run path following command, then stop at the end.
-    return ramseteCommand.andThen(() -> driveSpark.tankDriveVolts(0, 0));
-  }
-}
   
 
 
 
   @Override
   public void robotInit() {
-    trajectoryJSON = "paths/YourPath.wpilib.json";
-    trajectory = new Trajectory();
+   
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
@@ -220,9 +160,7 @@ public class Robot extends TimedRobot {
     direction=1;
   //  auto = new Auto(limelight);
     driveSpark = new DriveSubsystem();    
-    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-    trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-
+   
 
     // Reuse buffer
     // Default to a length of 60, start empty output
@@ -264,7 +202,7 @@ public class Robot extends TimedRobot {
     
     timer.start();
     startTime = timer.get();
-    getAutonomousCommand(trajectory).schedule();
+   
   }
 
  
@@ -273,7 +211,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    CommandScheduler.getInstance().run();
+    
   }
 
  
