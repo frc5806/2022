@@ -218,6 +218,8 @@ public class Robot extends TimedRobot {
     direction=1;
   //  auto = new Auto(limelight);
     driveSpark = new DriveSubsystem();    
+    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+    trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
 
 
     // Reuse buffer
