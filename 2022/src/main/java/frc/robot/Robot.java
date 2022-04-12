@@ -82,6 +82,8 @@ public class Robot extends TimedRobot {
   //private String m_autoSelected;
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick1;
+  private Trajectory m_trajectory;
+  private final RamseteController m_ramseteController = new RamseteController();
   private Joystick joystick2;
   private int direction;
   private boolean bools2=true;
@@ -202,7 +204,7 @@ public class Robot extends TimedRobot {
     
     timer.start();
     startTime = timer.get();
-   
+    driveSpark.resetOdometry(m_trajectory.getInitialPose());
   }
 
  
@@ -211,7 +213,24 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    
+      // Update odometry.
+      driveSpark.updateOdometry();
+
+      // Update robot position on Field2d.
+     
+  
+      if (timer.get() < m_trajectory.getTotalTimeSeconds()) {
+        // Get the desired pose from the trajectory.
+        var desiredPose = m_trajectory.sample(timer.get());
+  
+        // Get the reference chassis speeds from the Ramsete controller.
+        var refChassisSpeeds = m_ramseteController.calculate(driveSpark.getPose(), desiredPose);
+  
+        // Set the linear and angular speeds.
+        driveSpark.drive(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
+      } else {
+        driveSpark.drive(0, 0);
+      }
   }
 
  
