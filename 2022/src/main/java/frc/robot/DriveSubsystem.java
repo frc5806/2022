@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.SPI;
+import com.kauailabs.navx.frc.AHRS;
 
 public class DriveSubsystem extends SubsystemBase {
     Constants driveConstants = new Constants();

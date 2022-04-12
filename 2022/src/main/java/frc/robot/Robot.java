@@ -298,11 +298,11 @@ public class Robot extends TimedRobot {
       led.inShot=true;
     }
     else if( joystick1.getRawButton(3)){
-      shooter.setSpeedPID(5600*.5)
+      shooter.setSpeedPID(5600*.5);
       led.inShot=true;
     }
     else{
-      shooter.setSpeedPID(0);
+      shooter.setSpeedPID(0.0);
       led.inShot=false;
     }
     if(joystick1.getRawButtonReleased(1) || joystick1.getRawButtonReleased(3)){

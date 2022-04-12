@@ -17,7 +17,7 @@ public class Shooter {
     static public CANSparkMax shooter2;
     private final SparkMaxPIDController pid1;
     private final SparkMaxPIDController pid2;
-    private int velocity;
+    private double velocity;
 
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
     public double kP2, kI2, kD2, kIz2, kFF2, kMaxOutput2, kMinOutput2;
@@ -94,8 +94,8 @@ public class Shooter {
         }
     }
 
-    public void setSpeedPID(double vel){
-        velocity=vel
+    public void setSpeedPID(Double vel){
+        velocity=vel;
         
     }
 
