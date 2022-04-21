@@ -12,25 +12,14 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.SPI;
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+
 public class DriveSubsystem extends SubsystemBase {
     Constants driveConstants = new Constants();
     // The motors on the left side of the drive.
-    private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(1, 3);
-    private final PIDController m_leftPIDController = new PIDController(1, 0, 0);
-    private final PIDController m_rightPIDController = new PIDController(1, 0, 0);
-
     private CANSparkMax driveL1 = new CANSparkMax(driveConstants.kLeftMotor1Port, MotorType.kBrushless); // 3
     private CANSparkMax driveL2 = new CANSparkMax(driveConstants.kLeftMotor2Port, MotorType.kBrushless); // 3
     private CANSparkMax driveL3 = new CANSparkMax(driveConstants.kLeftMotor3Port, MotorType.kBrushless); // 3
-
+    
     // The motors on the Right side of the drive.
     private CANSparkMax driveR1 = new CANSparkMax(driveConstants.kRightMotor1Port, MotorType.kBrushless); // 3
     private CANSparkMax driveR2 = new CANSparkMax(driveConstants.kRightMotor2Port, MotorType.kBrushless); // 3
@@ -54,8 +43,6 @@ public class DriveSubsystem extends SubsystemBase {
   // The robot's drive
   private final DifferentialDrive m_drive = new DifferentialDrive(m_leftMotors, m_rightMotors);
 
-  private final DifferentialDriveKinematics m_kinematics =
-  new DifferentialDriveKinematics(driveConstants.kTrackwidthMeters);
   // The left-side drive encoder
   private final RelativeEncoder m_leftEncoder = driveL1.getAlternateEncoder(4260);
 
@@ -63,7 +50,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final RelativeEncoder m_rightEncoder = driveR1.getAlternateEncoder(4260);
 
   // The gyro sensor
-  private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
+  private final Gyro m_gyro = new ADXRS450_Gyro();
 
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
@@ -80,7 +67,6 @@ public class DriveSubsystem extends SubsystemBase {
     driveR1.setSmartCurrentLimit(20);
     driveR2.setSmartCurrentLimit(20);
     driveR3.setSmartCurrentLimit(20);
-
     // Sets the distance per pulse for the encoders
     //m_leftEncoder.setDistancePerPulse(driveConstants.kEncoderDistancePerPulse);
     //m_rightEncoder.setDistancePerPulse(driveConstants.kEncoderDistancePerPulse);
@@ -190,31 +176,10 @@ public class DriveSubsystem extends SubsystemBase {
   public void setMaxOutput(double maxOutput) {
     m_drive.setMaxOutput(maxOutput);
   }
-  public void setSpeeds(DifferentialDriveWheelSpeeds speeds) {
-    final double leftFeedforward = m_feedforward.calculate(speeds.leftMetersPerSecond);
-    final double rightFeedforward = m_feedforward.calculate(speeds.rightMetersPerSecond);
-
-    final double leftOutput =
-        m_leftPIDController.calculate(m_leftEncoder.getVelocity()/60*driveConstants.kWheelDiameterMeters, speeds.leftMetersPerSecond);
-    final double rightOutput =
-        m_rightPIDController.calculate(m_rightEncoder.getVelocity()/60*driveConstants.kWheelDiameterMeters, speeds.rightMetersPerSecond);
-    m_leftMotors.setVoltage(leftOutput + leftFeedforward);
-    m_rightMotors.setVoltage(rightOutput + rightFeedforward);
-  }
-
-  public void drive2(double xSpeed, double rot) {
-    var wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
-    setSpeeds(wheelSpeeds);
-  }
 
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
-  }
-
-  public void updateOdometry() {
-    m_odometry.update(
-        m_gyro.getRotation2d(), m_leftEncoder.getPosition()*driveConstants.kWheelDiameterMeters, m_rightEncoder.getPosition()*driveConstants.kWheelDiameterMeters);
   }
 
   /**
