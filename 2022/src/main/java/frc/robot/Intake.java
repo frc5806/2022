@@ -24,8 +24,8 @@ public class Intake {
         intake1 = new CANSparkMax(CANID1, MotorType.kBrushless);
         hopper = new VictorSPX(CANID2);
         
-        pistonIntake1 = new Solenoid(PneumaticsModuleType.CTREPCM, position1); //5
-        pistonIntake2 = new Solenoid(PneumaticsModuleType.CTREPCM, position2);//6
+        pistonIntake1 = new Solenoid(0, PneumaticsModuleType.CTREPCM, position1); //5
+        pistonIntake2 = new Solenoid(0, PneumaticsModuleType.CTREPCM, position2);//6
 
        
     }
@@ -40,6 +40,15 @@ public class Intake {
 
     public void stopIntake(){
         intake1.set(0);
+    }
+
+    public void rampUp(double seconds){
+        double speed = 0;
+        speed -= 0.25 * seconds;
+        if (seconds >= 30){
+            speed = -0.85;
+        }
+        intake1.set(speed);
     }
 
     public void stopHopper(){
