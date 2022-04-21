@@ -13,39 +13,11 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.sql.Time;
-import java.io.IOException;
-import java.nio.file.Path;
-
-import static edu.wpi.first.wpilibj.XboxController.Button;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.RamseteController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.DriverStation;
-
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import java.util.List;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Filesystem;
 
 import edu.wpi.first.wpilibj.SPI;
 
@@ -87,8 +59,6 @@ public class Robot extends TimedRobot {
   //private String m_autoSelected;
   //private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private Joystick joystick1;
-  private Trajectory m_trajectory;
-  private final RamseteController m_ramseteController = new RamseteController();
   private Joystick joystick2;
   private int direction;
   private boolean bools2=true;
@@ -98,8 +68,6 @@ public class Robot extends TimedRobot {
   private double sensitivity = 1;
   private double startTime;
   private Timer timer;
-  
-  private Constants constants=new Constants();
   //private Compressor compressor;
   
   private LED led;
@@ -110,7 +78,6 @@ public class Robot extends TimedRobot {
   private Limelight limelight;
   private int position1 = 0;
   private int position2 = 0;
-  private double shooterSensitivity;
  
   // private AHRS gyro;
   private Climb climb;
@@ -125,6 +92,7 @@ public class Robot extends TimedRobot {
   // private final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
   //Encoder encoder = new Encoder(0, 1, true); // Add EncodingType.k4X
   boolean goer = false;
+  private int mili;
   
 
 /*
@@ -139,20 +107,18 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
+
   
 
 
 
   @Override
   public void robotInit() {
-    String trajectoryJSON = "paths/YourPath.wpilib.json";
-   
     //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
    // m_chooser.addOption("My Auto", kCustomAuto);
   // *** GET RID OF DRIVESPARK WHEN COMMENTING IN
   //m_robotContainer = new RobotContainer();
     timer = new Timer();
-    shooterSensitivity=1;
     joystick1 = new Joystick(0);
     joystick2 = new Joystick(2);
     buttonBoard = new Joystick(1);   
@@ -167,15 +133,8 @@ public class Robot extends TimedRobot {
     led= new LED(8, 88);
     direction=1;
   //  auto = new Auto(limelight);
-    driveSpark = new DriveSubsystem(); 
-    try {
-    Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-    m_trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-    }
-    catch(IOException ex){
-      DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-    }
-   
+    driveSpark = new DriveSubsystem();    
+
 
     // Reuse buffer
     // Default to a length of 60, start empty output
@@ -214,10 +173,8 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
   //  auto.startTimeSet();
-    
     timer.start();
     startTime = timer.get();
-    driveSpark.resetOdometry(m_trajectory.getInitialPose());
   }
 
  
@@ -226,24 +183,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-      // Update odometry.
-      driveSpark.updateOdometry();
-
-      // Update robot position on Field2d.
-     
-  
-      if (timer.get() < m_trajectory.getTotalTimeSeconds()) {
-        // Get the desired pose from the trajectory.
-        var desiredPose = m_trajectory.sample(timer.get());
-  
-        // Get the reference chassis speeds from the Ramsete controller.
-        var refChassisSpeeds = m_ramseteController.calculate(driveSpark.getPose(), desiredPose);
-  
-        // Set the linear and angular speeds.
-        driveSpark.drive2(refChassisSpeeds.vxMetersPerSecond, refChassisSpeeds.omegaRadiansPerSecond);
-      } else {
-        driveSpark.drive2(0, 0);
-      }
+    if(timer.get()-startTime<0.5){
+      shooter.shoot(.7);
+      driveSpark.arcadeDrive(0, 0);
+    }
+    else if(timer.get()-startTime<2){
+      intake.stopIntake();
+      shooter.dontShoot();
+      driveSpark.arcadeDrive(0.75,0);
+    }
+    else{
+      shooter.dontShoot();
+      driveSpark.arcadeDrive(0,0);
+    }
   }
 
  
@@ -252,14 +204,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
     System.out.println("teleop"); 
     // if(joystick2.getRawButton(6)){
     //   direction=-1*direction;
     // }
 
     sensitivity  = 0.5 - joystick2.getRawAxis(3)/2;
-    shooterSensitivity  = 0.5 - joystick1.getRawAxis(3)/2;
+    double shooterSensitivity = 0.5 - joystick1.getRawAxis(3)/2;
     
     //comp.start();
    // compressor.enableDigital();
@@ -276,11 +227,12 @@ public class Robot extends TimedRobot {
     /* ------- Drive ------- */
 
    if (joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick2.getRawAxis(2) < -0.01){
-     driveSpark.drive(joystick2.getRawAxis(1) * sensitivity *reverse, joystick2.getRawAxis(2)*sensitivity*reverse);
+     driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity *reverse, joystick2.getRawAxis(2)*sensitivity*reverse);
     } else {
       System.out.println("hello");
-      driveSpark.drive(0, 0);
+      driveSpark.arcadeDrive(0, 0);
     }
+    
 
     // Reverse drive
     if (joystick2.getRawButton(8)){
@@ -290,15 +242,21 @@ public class Robot extends TimedRobot {
       reverse = -1;
     }
     
-
+    
   /* ------ Intake ----------- */
   if (joystick2.getRawButton(1)) {
-    intake.forwardIntake(-0.65);
+    //intake.forwardIntake(-.85);
+    mili += 20;
+    intake.rampUp(mili/100);
    } else if (joystick2.getRawButton(3)) {
     intake.backIntake();
    } else  {
      intake.stopIntake();
  }
+
+  if (joystick2.getRawButtonReleased(1)){
+    mili = 0;
+  }
 
  if (joystick2.getRawButtonPressed(2)){
    intake.setIntake();
@@ -326,22 +284,20 @@ public class Robot extends TimedRobot {
 
     /* ------------ Shooter --------- */
     if (joystick1.getRawButton(1)){
-      shooter.setSpeedPID(5600*shooterSensitivity); // takes in speed
+      shooter.shoot(1*shooterSensitivity); // takes in speed
       led.inShot=true;
     }
     else if( joystick1.getRawButton(3)){
-      shooter.setSpeedPID(5600*.5);
+      shooter.shoot(.5);
       led.inShot=true;
     }
     else{
-      shooter.setSpeedPID(0.0);
+      shooter.dontShoot();
       led.inShot=false;
     }
     if(joystick1.getRawButtonReleased(1) || joystick1.getRawButtonReleased(3)){
       led.changeMode();
     }
-
-    shooter.update();
     
     System.out.println(shooter.shooter1.isFollower());
 
@@ -385,7 +341,7 @@ public class Robot extends TimedRobot {
       
       position1 = position1+ 11;
       position2 = position2- 11;
-       
+      climb.winch(.5);
 
       
       bools2=true;
@@ -398,7 +354,7 @@ public class Robot extends TimedRobot {
            
       position1 =  position1- 11;
       position2 = position2+ 11;
-      
+      climb.winch(-.5);
       bools2=false;
       prev1B=true;
       prev2B=true;
@@ -406,33 +362,39 @@ public class Robot extends TimedRobot {
       }
   
       else{
-        if (buttonBoard.getRawButton(4)) {
+        if (buttonBoard.getRawButton(5)) {
           prev1B=true;
           position1 = position1 +11;
+          climb.winchold1.set(.5);
         } 
-        else if (buttonBoard.getRawButton(3)) {
+        else if (buttonBoard.getRawButton(6)) {
           prev1B=true;
+          climb.winchold1.set(-.5);
           position1=position1-11;
         }
         else{
           if(prev1B){
           position1=(int)climb.m_encoder1.getPosition();
           }
+          climb.winchold1.set(0);
           prev1B=false;
         }
-        if (buttonBoard.getRawButton(5)) {
+        if (buttonBoard.getRawButton(3)) {
           position2 = position2-11;
           prev2B=true;
+          climb.winchold2.set(-.5);
         }
-        else if (buttonBoard.getRawButton(6)) {
+        else if (buttonBoard.getRawButton(4)) {
           position2=position2+11;
           prev2B=true;
+          climb.winchold2.set(.5);
           
         }
         else{
           if(prev2B){
           position2=-(int)climb.m_encoder2.getPosition();
           }
+          climb.winchold2.set(0);
           prev2B=false;
         }
 
@@ -441,7 +403,7 @@ public class Robot extends TimedRobot {
     }
 
  
-   climb.update(position1, position2);
+   //climb.winchPID(position1, position2);
   
      
     
