@@ -14,7 +14,6 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -35,7 +34,6 @@ public class Climb {
     public RelativeEncoder m_encoder2;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
     public double kP2, kI2, kD2, kIz2, kFF2, kMaxOutput2, kMinOutput2;
-    public double feedForward;
 
     public CANSparkMax winchold1;
     public CANSparkMax winchold2;
@@ -43,16 +41,15 @@ public class Climb {
     private static Compressor compressor;
 
     public Climb(int position1, int position2, int victor1, int victor2, int position3, int position4) {
-        climbenoid1 = new Solenoid(PneumaticsModuleType.CTREPCM, position1); // 7
-        climbenoid2 = new Solenoid(PneumaticsModuleType.CTREPCM, position2); // 4
+        climbenoid1 = new Solenoid(0, PneumaticsModuleType.CTREPCM, position1); // 7
+        climbenoid2 = new Solenoid(0, PneumaticsModuleType.CTREPCM, position2); // 4
         winchold1 = new CANSparkMax(victor1, MotorType.kBrushless);
         winchold2 = new CANSparkMax(victor2, MotorType.kBrushless);
         
-        winchold1.restoreFactoryDefaults();
-        winchold2.restoreFactoryDefaults();
+        
         enabler = false;
-        climbenoid3 = new Solenoid(PneumaticsModuleType.CTREPCM, position3); // 7
-        climbenoid4 = new Solenoid(PneumaticsModuleType.CTREPCM, position4); // 4
+        climbenoid3 = new Solenoid(0, PneumaticsModuleType.CTREPCM, position3); // 7
+        climbenoid4 = new Solenoid(0, PneumaticsModuleType.CTREPCM, position4); // 4
 
         climbenoid1.set(false);
         climbenoid2.set(false);
@@ -69,8 +66,7 @@ public class Climb {
     // Encoder object created to display position values
         m_encoder2 = winchold2.getEncoder();
 
-        winchold1.setIdleMode(IdleMode.kBrake);
-        winchold1.setIdleMode(IdleMode.kBrake);
+        
         kP = 0.5; 
         kI = 1e-4;
         kD = 0; 
@@ -78,7 +74,6 @@ public class Climb {
         kFF = 0; 
         kMaxOutput = 1; 
         kMinOutput = -1;
-        feedForward = 0.7;
 
     // set PID coefficients
         m_pidController1.setP(kP);
@@ -103,19 +98,23 @@ public class Climb {
         m_pidController2.setFF(kFF2);
         m_pidController2.setOutputRange(kMinOutput2, kMaxOutput2);
         
+        
+
     }
 
     public void enableComp(){
         compressor.enableHybrid(40, 80);
     }
-
-    public void update(int position1, int position2){
-        m_pidController1.setReference(position1, CANSparkMax.ControlType.kSmartMotion);
-        m_pidController2.setReference(position2, CANSparkMax.ControlType.kSmartMotion);
+    
+    public void winchPID(int position1, int position2){
+        m_pidController1.setReference(position1, CANSparkMax.ControlType.kPosition);
+        m_pidController2.setReference(-position2, CANSparkMax.ControlType.kPosition);
     }
     
+    
+
     public void winchIn(){
-        winchold1.set(-1);
+        winchold1.set(1);
         winchold2.set(1);
     }
 
@@ -126,7 +125,7 @@ public class Climb {
 
     public void winch(double speed){
         winchold1.set(speed);
-        winchold2.set(-speed);
+        winchold2.set(speed);
     }
     public void winchStop(){
         winchold1.set(0);
@@ -144,10 +143,9 @@ public class Climb {
     }
 
     public void clencher(){
-        enabler = !enabler;
-        climbenoid3.set(enabler);
-        climbenoid4.set(enabler);
+        
+        climbenoid3.set(false);
+        climbenoid4.set(false);
     }
-
 
 }
