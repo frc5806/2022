@@ -236,7 +236,7 @@ public class Robot extends TimedRobot {
     /* ------- Drive ------- */
 
    if (joystick2.getRawAxis(1) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(1) < -0.01 || joystick2.getRawAxis(2) < -0.01){
-     driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity *reverse, .5*joystick2.getRawAxis(2)*sensitivity*reverse);
+     driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity *reverse, joystick2.getRawAxis(2)*sensitivity*reverse);
     } else {
       System.out.println("hello");
       driveSpark.arcadeDrive(0, 0);
