@@ -183,11 +183,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    if(timer.get()-startTime<0.5){
-      shooter.shoot(.7);
+    if(timer.get()-startTime<0.2){
+      shooter.setSpeedPID(4000);
       driveSpark.arcadeDrive(0, 0);
+      shooter.update();
+      shooter.shooter3.set(ControlMode.PercentOutput, 0);
     }
-    else if(timer.get()-startTime<2){
+    else if(timer.get()-startTime<0.7){
+      shooter.setSpeedPID(4000);
+      driveSpark.arcadeDrive(0, 0);
+      shooter.update();
+    }
+
+    
+    else if(timer.get()-startTime<2.7){
       intake.stopIntake();
       shooter.dontShoot();
       driveSpark.arcadeDrive(0.75,0);
@@ -226,8 +235,8 @@ public class Robot extends TimedRobot {
 
     /* ------- Drive ------- */
 
-   if (joystick2.getRawAxis(0) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(0) < -0.01 || joystick2.getRawAxis(2) < -0.01){
-     driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity *reverse, joystick2.getRawAxis(2)*sensitivity*reverse);
+   if (joystick2.getRawAxis(1) > 0.01 || joystick2.getRawAxis(2) > 0.01 || joystick2.getRawAxis(1) < -0.01 || joystick2.getRawAxis(2) < -0.01){
+     driveSpark.arcadeDrive(joystick2.getRawAxis(1) * sensitivity *reverse, .5*joystick2.getRawAxis(2)*sensitivity*reverse);
     } else {
       System.out.println("hello");
       driveSpark.arcadeDrive(0, 0);
@@ -283,7 +292,7 @@ public class Robot extends TimedRobot {
 
 
     /* ------------ Shooter --------- */
-    if (joystick1.getRawButton(1)){
+  /*  if (joystick1.getRawButton(1)){
       shooter.shoot(1*shooterSensitivity); // takes in speed
       led.inShot=true;
     }
@@ -299,9 +308,33 @@ public class Robot extends TimedRobot {
       led.changeMode();
     }
     
+    System.out.println(shooter.shooter1.isFollower()); */
+
+    if (joystick1.getRawButton(1)){
+      shooter.setSpeedPID(5600*shooterSensitivity); // takes in speed
+      led.inShot=true;
+      shooter.update();
+    }
+    else if( joystick1.getRawButton(3)){
+      shooter.setSpeedPID(5600*.5);
+      led.inShot=true;
+      shooter.update();
+    }
+    else{
+      shooter.setSpeedPID(0);
+      shooter.setSpeedPID(0.0);
+      led.inShot=false;
+      shooter.dontShoot();
+    }
+    if(joystick1.getRawButtonReleased(1) || joystick1.getRawButtonReleased(3)){
+      led.changeMode();
+    }
+    
+    
     System.out.println(shooter.shooter1.isFollower());
 
-    // if (joystick2.)
+    // if (joystick2.) 
+
 
 
     /*------- Climb ------- */
